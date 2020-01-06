@@ -5,3 +5,8 @@ __pycache__/
 
 # Environments
 venv/
+
+# Output files
+*.pdf
+*.csv
+*.txt
