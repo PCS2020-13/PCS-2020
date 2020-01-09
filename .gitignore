@@ -13,3 +13,6 @@ venv/
 *.pdf
 *.csv
 *.txt
+
+# Files for testing purposes
+test.py
