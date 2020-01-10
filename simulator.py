@@ -28,22 +28,6 @@ class RoundaboutSim():
     def __repr__(self):
         return '\n'.join([np.array2string(row)[1:-1] for row in self.model])
 
-    def read_input(self, path):
-        """ MAYBE DEPRECATED
-
-        Create a roundabout model from an input file. On creation, a roundabout does not yet contain any cars.
-
-        Arguments:
-            path {string} -- The path that contains the input file.
-
-        Returns:
-            np.array -- A 2D numpy array consisting of tuples that show the type of a tile and whether there is a car on that tile.
-        """
-        with open(path) as f:
-            model = [[(x, None) for x in line.split(' ')] for line in f]
-
-        dtype = [('type', int), ('car', object)]
-        return np.array(model, dtype=dtype)
 
     def get_cars(self):
         """Get a list of the cars currently on the grid.
@@ -97,7 +81,7 @@ class RoundaboutSim():
         masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
         return masked_grid
 
-    def initialize(self, n_cars=1, animate=True):
+    def initialize(self, n_cars=5, animate=True):
         self.cars=[]
 
         for _ in range(n_cars):
@@ -147,20 +131,64 @@ class RoundaboutSim():
         6 = Right and straight
         7 = Right
         '''
+        self.finished_cars = []
         for car in self.cars:
             r, c = car.cur_pos
             state = self.model[r][c]
 
-            if state == 3:
-                car.turn_right
-            elif state == 7:
-                car.turn_right()
+            exceptions = [[3, 3], [3, 7], [7, 7], [7, 3], [2, 2], [2, 8], [8, 8], [8, 2]]
 
-            elif state == 2:
-                car.toggle_active()
-                return
+            turn = np.random.randint(2)
 
-            car.drive()
+            if self.offside_priority(car):
+                for i in range(4):
+                    grid = i
+                    if np.array_equal(car.cur_pos, exceptions[i]):
+                        if car.orientation == (2 - grid) %4:
+                            state = 5
+                        elif car.orientation == (2 - (grid + 1)) %4:
+                            state = 4
+                for i in range(4, 8):
+                    grid = i
+                    if np.array_equal(car.cur_pos, exceptions[i]):
+                        if car.orientation == (2 + grid) %4:
+                            state = 6
+                        elif car.orientation == (2 + (grid + 1)) %4:
+                            state = 5
+
+                if state == 3:
+                    car.turn_left()
+                elif state == 4:
+                    if turn:
+                        car.turn_left()
+                elif state == 6:
+                    if turn:
+                        car.turn_right()
+                elif state == 7:
+                    car.turn_right()
+                elif state == 2:
+                    car.toggle_active()
+                    self.finished_cars.append(car)
+                    self.cars.remove(car)
+
+                car.drive()
 
         if DEBUG:
             print(self.cars)
+
+    def offside_priority(self, car):
+        check_pos = car.cur_pos
+        if car.orientation == NORTH:
+            check_pos = check_pos + [-1, -1]
+        elif car.orientation == EAST:
+            check_pos = check_pos + [-1, 1]
+        elif car.orientation == SOUTH:
+            check_pos = check_pos + [1, 1]
+        else:
+            check_pos = check_pos + [1, -1]
+
+        for vehicle in self.cars:
+            if np.array_equal(vehicle.cur_pos, check_pos):
+                return False
+            else:
+                return True
