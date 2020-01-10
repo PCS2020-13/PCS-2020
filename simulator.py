@@ -15,7 +15,7 @@ cmap.set_bad(color='red')
 
 class RoundaboutSim():
     def __init__(self, model_path, show_animation=True):
-        self.model = np.loadtxt(model_path, dtype=int)
+        self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.cars = []
 
         self.start_states = np.argwhere(self.model==1)
@@ -81,7 +81,7 @@ class RoundaboutSim():
         masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
         return masked_grid
 
-    def initialize(self, n_cars=5, animate=True):
+    def initialize(self, n_cars=1, animate=True):
         self.cars=[]
 
         for _ in range(n_cars):
@@ -108,7 +108,7 @@ class RoundaboutSim():
 
             anime = animation.FuncAnimation(fig, self.step,
                                             fargs=(sim_grid,),
-                                            frames=10, #DETERMINE!!
+                                            frames=100, #DETERMINE!!
                                             interval=1000,
                                             blit=False)
 
@@ -130,33 +130,35 @@ class RoundaboutSim():
         5 = Straight
         6 = Right and straight
         7 = Right
+
         '''
-        self.finished_cars = []
         for car in self.cars:
             r, c = car.cur_pos
             state = self.model[r][c]
-
             exceptions = [[3, 3], [3, 7], [7, 7], [7, 3], [2, 2], [2, 8], [8, 8], [8, 2]]
-
-            turn = np.random.randint(2)
+            turn = 1/3 * car.turn_ctr
 
             if self.offside_priority(car):
-                for i in range(4):
-                    grid = i
-                    if np.array_equal(car.cur_pos, exceptions[i]):
-                        if car.orientation == (2 - grid) %4:
-                            state = 5
-                        elif car.orientation == (2 - (grid + 1)) %4:
-                            state = 4
-                for i in range(4, 8):
-                    grid = i
-                    if np.array_equal(car.cur_pos, exceptions[i]):
-                        if car.orientation == (2 + grid) %4:
-                            state = 6
-                        elif car.orientation == (2 + (grid + 1)) %4:
-                            state = 5
+                # state 8 defines the exceptions
+                if state == 8:
+                    for i in range(4):
+                        grid = i
+                        if np.array_equal(car.cur_pos, exceptions[i]):
+                            # only count the turns for the middle parts of the roundabout
+                            car.turn_ctr += 1
+                            if car.orientation == np.abs(2 - grid) %4:
+                                state = 5
+                            elif car.orientation == np.abs(2 - (grid + 1)) %4:
+                                state = 4
+                    for i in range(4, 8):
+                        grid = i
+                        if np.array_equal(car.cur_pos, exceptions[i]):
+                            if car.orientation == np.abs(2 + grid) %4:
+                                state = 6
+                            elif car.orientation == np.abs(2 + (grid + 1)) %4:
+                                state = 5
 
-                if state == 3:
+                elif state == 3:
                     car.turn_left()
                 elif state == 4:
                     if turn:
@@ -168,14 +170,17 @@ class RoundaboutSim():
                     car.turn_right()
                 elif state == 2:
                     car.toggle_active()
-                    self.finished_cars.append(car)
-                    self.cars.remove(car)
 
                 car.drive()
+
+        # remove all cars that have finished
+        self.cars = [car for car in self.cars if car.active]
 
         if DEBUG:
             print(self.cars)
 
+
+    # NOG NIET ECHT WERKEND
     def offside_priority(self, car):
         check_pos = car.cur_pos
         if car.orientation == NORTH:
@@ -190,5 +195,4 @@ class RoundaboutSim():
         for vehicle in self.cars:
             if np.array_equal(vehicle.cur_pos, check_pos):
                 return False
-            else:
-                return True
+        return True
