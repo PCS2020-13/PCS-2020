@@ -22,7 +22,7 @@ cmap.set_bad(color='red')
 
 class RoundaboutSim():
     def __init__(self, model_path, density=0.5, show_animation=True):
-        self.model = np.loadtxt(model_path, dtype=int)
+        self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.aimed_density = density
         self.true_density = 0
 
@@ -156,6 +156,7 @@ class RoundaboutSim():
         5 = Straight
         6 = Right and straight
         7 = Right
+
         '''
         for car in self.cars:
             r, c = car.cur_pos
@@ -163,8 +164,7 @@ class RoundaboutSim():
 
             exceptions = [[3, 3], [3, 7], [7, 7], [
                 7, 3], [2, 2], [2, 8], [8, 8], [8, 2]]
-
-            turn = binomial(1, car.p_turn)
+            turn = 1/3 * car.turn_ctr
 
             if self.offside_priority(car):
                 for i in range(4):
@@ -199,17 +199,39 @@ class RoundaboutSim():
                         car.turn_right()
                 elif state == 7:
                     car.turn_right()
+                elif state == 8:
+                    for i in range(4):
+                        grid = i
+                        if np.array_equal(car.cur_pos, exceptions[i]):
+                            # only count the turns for the middle parts of the roundabout
+                            car.turn_ctr += 1
+                            if car.orientation == np.abs(2 - grid) %4:
+                                state = 5
+                            elif car.orientation == np.abs(2 - (grid + 1)) %4:
+                                state = 4
+                    for i in range(4, 8):
+                        grid = i
+                        if np.array_equal(car.cur_pos, exceptions[i]):
+                            if car.orientation == np.abs(2 + grid) %4:
+                                state = 6
+                            elif car.orientation == np.abs(2 + (grid + 1)) %4:
+                                state = 5
 
             car.drive()
 
         self.cars = list(filter(lambda c: c.active, self.cars))
         self.true_density = len(self.cars) / self.road_size
 
+        # remove all cars that have finished
+        self.cars = [car for car in self.cars if car.active]
+
         if DEBUG:
             print("CARS ON THE ROAD: {}".format(len(self.cars)))
             print("DENSITY: {}".format(self.true_density))
             print("CARS FINISHED: {}".format(self.n_finished))
 
+
+    # NOG NIET ECHT WERKEND
     def offside_priority(self, car):
         check_pos = car.cur_pos
         if car.orientation == NORTH:
@@ -222,7 +244,6 @@ class RoundaboutSim():
             check_pos = check_pos + [1, -1]
 
         for vehicle in self.cars:
-            if not np.array_equal(vehicle.cur_pos, check_pos):
-                return True
-
-        return False
+            if np.array_equal(vehicle.cur_pos, check_pos):
+                return False
+        return True

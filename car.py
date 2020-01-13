@@ -2,11 +2,12 @@
 from utils import (NORTH, EAST, SOUTH, WEST)
 
 class Car:
-    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5):
+    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0):
         self.orientation = orientation
         self.cur_pos = start_pos
         self.active = active
         self.p_turn = p_turn
+        self.turn_ctr = turn_ctr
 
     def __repr__(self):
         return '(cur_pos: {}, orientation: {})'.format(self.cur_pos, self.orientation)
@@ -18,10 +19,10 @@ class Car:
         """Move the car to a new position.
 
         Arguments:
-            new_pos {(int, int)} -- A tuple containing the x and y coordinates of the new position.
+            new_pos {[int, int]} -- A numpy-array containing the x and y coordinates of the new position.
 
         Returns:
-            {(int, int)} -- A tuple containing the x and y coordinates of the updated current position.
+            {[int, int]} -- A numpy-array containing the x and y coordinates of the updated current position.
         """
 
         if self.orientation == NORTH:
@@ -44,3 +45,4 @@ class Car:
         """Make a right turn.
         """
         self.orientation = (self.orientation + 1) % 4
+
