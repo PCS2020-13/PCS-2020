@@ -20,9 +20,10 @@ class Roundabout():
 
 
 class Regular(Roundabout):
-    def __init__(self, name):
+    def __init__(self):
         self.size = 11
         self.points = [((2,2),(8,8))]
+        self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0],
                               [0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0],
                               [2, 5, 6, 5, 5, 5, 5, 5, 6, 5, 1],
@@ -34,12 +35,13 @@ class Regular(Roundabout):
                               [1, 5, 6, 5, 5, 5, 5, 5, 6, 5, 2],
                               [0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0],
                               [0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0]])
-        self.area = self.get_area(self.points)
 
 
 class Turbo(Roundabout):
-    def __init__(self, name):
+    def __init__(self):
         self.size = 11
+        self.points = [((2,2),(8,8))]
+        self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0],
                               [0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0],
                               [2, 5, 6, 5, 5, 5, 5, 4, 7, 5, 1],
@@ -54,8 +56,10 @@ class Turbo(Roundabout):
 
 
 class Magic(Roundabout):
-    def __init__(self, name):
+    def __init__(self):
         self.size = 29
+        self.points = [((3,11),(9,17)), ((11,19),(17,25)), ((19,11),(25,17)), ((11,3),(17,9))]
+        self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -87,5 +91,5 @@ class Magic(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 
-round = Regular('regular')
+round = Magic()
 print(round.area)
