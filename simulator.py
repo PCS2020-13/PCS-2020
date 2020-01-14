@@ -22,7 +22,7 @@ cmap.set_bad(color='red')
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.01, steps=100, show_animation=True):
+    def __init__(self, model, density=0.1, steps=100, show_animation=True):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
@@ -191,6 +191,8 @@ class RoundaboutSim():
                 else:
                     self.cars_not_round.append(car)
         else:
+            cur_pos = [car.cur_pos for car in self.cars]
+            print(cur_pos)
             sys.exit(1)
 
         # Let the cars on the roundabout drive first.
@@ -239,31 +241,40 @@ class RoundaboutSim():
                     else:
                         state = 5
 
-        if state == 3:
-            car.turn_left()
-        elif state == 6:
-            car.turn_ctr += 1
-            turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
-            if turn == 1:
-                car.turn_right()
-        elif state == 7:
-            car.turn_right()
-        elif state == 9:
-            car.turn_right()
-            if self.offside_priority(car):
-                car.drive()
+        if self.offside_priority(car):
+            if state == 3:
                 car.turn_left()
-            else:
-                car.turn_left()
-        elif state == 10:
-            car.turn_left()
-            if self.offside_priority(car):
                 car.drive()
+            elif state == 5:
+                car.drive()
+            elif state == 6:
+                car.turn_ctr += 1
+                turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
+                if turn == 1:
+                    car.turn_right()
+                    if self.offside_priority(car):
+                        car.drive()
+                    else:
+                        car.turn_ctr = -1
+                else:
+                    car.drive()
+            elif state == 7:
                 car.turn_right()
-            else:
+                car.drive()
+            elif state == 9:
                 car.turn_right()
-        
-        car.drive()
+                if self.offside_priority(car):
+                    car.drive()
+                    car.turn_left()
+                else:
+                    car.turn_left()
+            elif state == 10:
+                car.turn_left()
+                if self.offside_priority(car):
+                    car.drive()
+                    car.turn_right()
+                else:
+                    car.turn_right()
 
     def drive_outside(self, car):
         r, c = car.cur_pos
@@ -297,6 +308,7 @@ class RoundaboutSim():
         return True
 
     def collision(self):
-        if len(np.unique(self.cars, axis=0)) == len(self.cars):
+        cur_pos = [car.cur_pos for car in self.cars]
+        if len(np.unique(cur_pos, axis=0)) == len(cur_pos):
             return False
         return True
