@@ -216,6 +216,20 @@ class RoundaboutSim():
                                 state = 6
                             elif car.orientation == np.abs(2 + (grid + 1)) %4:
                                 state = 5
+                elif state == 9:
+                    car.turn_right()
+                    if self.offside_priority(car):
+                        car.drive()
+                        car.turn_left()
+                    else:
+                        car.turn_left()
+                elif state == 10:
+                    car.turn_left()
+                    if self.offside_priority(car):
+                        car.drive()
+                        car.turn_right()
+                    else:
+                        car.turn_right()
 
             car.drive()
 
