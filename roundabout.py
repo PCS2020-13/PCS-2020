@@ -126,5 +126,5 @@ class Magic(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 
-round = Turbo()
-print(round.area)
+# round = Turbo()
+# print(round.area)

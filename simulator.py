@@ -22,27 +22,28 @@ cmap.set_bad(color='red')
 
 class RoundaboutSim():
     def __init__(self, model, density=0.5, steps=100, show_animation=True):
-        # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
-        self.model = model
+        self.model = np.loadtxt(model, delimiter = ' ', dtype=int)
+        # self.model = model
         self.aimed_density = density
         self.true_density = 0
         self.steps = steps
 
-        self.road_size = (self.model.grid != 0).sum()
+        self.road_size = (self.model != 0).sum()
         self.n_finished = 0
 
-        self.start_states = np.argwhere(self.model.grid == 1)
+        self.start_states = np.argwhere(self.model == 1)
         assert self.start_states.size != 0, 'This roundabout contains no start states.'
-        self.end_states = np.argwhere(self.model.grid == 2)
+        self.end_states = np.argwhere(self.model == 2)
         assert self.end_states.size != 0, 'This roundabout contains no end states.'
 
         self.free_starts = np.copy(self.start_states)
         self.cars = []
+        self.turns_per_car = []
 
         self.show_animation = show_animation
 
     def __repr__(self):
-        return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
+        return '\n'.join([np.array2string(row)[1:-1] for row in self.model])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -68,9 +69,9 @@ class RoundaboutSim():
             return SOUTH
         elif start_pos[1] == 0:
             return EAST
-        elif start_pos[0] == self.model.grid.shape[0] - 1:
+        elif start_pos[0] == self.model.shape[0] - 1:
             return NORTH
-        elif start_pos[1] == self.model.grid.shape[1] - 1:
+        elif start_pos[1] == self.model.shape[1] - 1:
             return WEST
 
     def get_grid(self):
@@ -79,7 +80,7 @@ class RoundaboutSim():
         Returns:
             np.array -- The model with all cars currently on the grid.
         """
-        grid = np.copy(self.model.grid)
+        grid = np.copy(self.model)
 
         for car in self.cars:
             r, c = car.cur_pos
@@ -180,7 +181,7 @@ class RoundaboutSim():
         '''
         for car in self.cars:
             r, c = car.cur_pos
-            state = self.model.grid[r][c]
+            state = self.model[r][c]
 
             exceptions = [[3, 3], [3, 7], [7, 7], [
                 7, 3], [2, 2], [2, 8], [8, 8], [8, 2]]
@@ -208,6 +209,7 @@ class RoundaboutSim():
                 elif state == 2:
                     car.toggle_active()
                     self.n_finished += 1
+                    self.turns_per_car.append(car.turns)
                     break
                 elif state == 3:
                     car.turn_left()
