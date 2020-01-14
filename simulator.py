@@ -43,8 +43,9 @@ class RoundaboutSim():
 
         self.show_animation = show_animation
 
-    def __repr__(self):
-        return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
+    def __str__(self):
+        return str(self.model)
+        #return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
