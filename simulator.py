@@ -205,6 +205,8 @@ class RoundaboutSim():
                 else:
                     self.cars_not_round.append(car)
         else:
+            cur_pos = [car.cur_pos for car in self.cars]
+            print(cur_pos)
             sys.exit(1)
 
         # Let the cars on the roundabout drive first.
@@ -257,6 +259,8 @@ class RoundaboutSim():
             if state == 3:
                 car.turn_left()
                 car.drive()
+            elif state == 5:
+                car.drive()
             elif state == 6:
                 car.turn_ctr += 1
                 turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
@@ -266,6 +270,8 @@ class RoundaboutSim():
                         car.drive()
                     else:
                         car.turn_ctr = -1
+                else:
+                    car.drive()
             elif state == 7:
                 car.turn_right()
                 car.drive()
@@ -283,7 +289,6 @@ class RoundaboutSim():
                     car.turn_right()
                 else:
                     car.turn_right()
-
 
     def drive_outside(self, car):
         r, c = car.cur_pos
@@ -317,6 +322,7 @@ class RoundaboutSim():
         return True
 
     def collision(self):
-        if len(self.cars) == len(set(self.cars)):
+        cur_pos = [car.cur_pos for car in self.cars]
+        if len(np.unique(cur_pos, axis=0)) == len(cur_pos):
             return False
         return True
