@@ -3,22 +3,27 @@ import numpy as np
 class Roundabout():
     def __init__(self):
         self.exceptions = []
-        self.area = []
         self.queue = np.array(([]))
 
     # Gets all the indexes between 2 points in the matrix.
-    def get_area(self, area, x, y):
-        x1, y1 = x
-        x2, y2 = y
-        for i in range(x1, x2+1):
-            for j in range(y1, y2+1):
-                area.append((i,j))
+    def get_area(self, points):
+        area = []
+
+        # Each element in points is a tuple of 2 coordinates. Each coordinate is a tuple of its x and y value.s
+        for point in points:
+            x1, y1 = point[0]
+            x2, y2 = point[1]
+            for i in range(x1, x2+1):
+                for j in range(y1, y2+1):
+                    area.append((i,j))
         return area
 
 
 class Regular(Roundabout):
-    def __init__(self, name):
+    def __init__(self):
         self.size = 11
+        self.points = [((2,2),(8,8))]
+        self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0],
                               [0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0],
                               [2, 5, 6, 5, 5, 5, 5, 5, 6, 5, 1],
@@ -30,12 +35,13 @@ class Regular(Roundabout):
                               [1, 5, 6, 5, 5, 5, 5, 5, 6, 5, 2],
                               [0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0],
                               [0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0]])
-       area = self.get_area()
 
 
 class Turbo(Roundabout):
-    def __init__(self, name):
+    def __init__(self):
         self.size = 11
+        self.points = [((2,2),(8,8))]
+        self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0],
                               [0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0],
                               [2, 5, 6, 5, 5, 5, 5, 4, 7, 5, 1],
@@ -50,8 +56,10 @@ class Turbo(Roundabout):
 
 
 class Magic(Roundabout):
-    def __init__(self, name):
+    def __init__(self):
         self.size = 29
+        self.points = [((3,11),(9,17)), ((11,19),(17,25)), ((19,11),(25,17)), ((11,3),(17,9))]
+        self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -83,5 +91,5 @@ class Magic(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 
-round = Regular('regular')
-print(round.grid)
+round = Magic()
+print(round.area)
