@@ -16,8 +16,11 @@ cmap = cm.Dark2
 cmap.set_bad(color='red')
 
 ####
-# TODO: - asshole_factor
-#       - dick_move()
+# TODO: - Reckless driving
+#         * asshole_factor
+#         * dick_move()
+#       - Different car velocities
+#       - 
 ####
 
 
