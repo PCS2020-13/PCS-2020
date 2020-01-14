@@ -1,5 +1,6 @@
 import numpy as np
-from numpy.lib.recfunctions import append_fields
+from numpy.random import binomial
+
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.animation as animation
@@ -14,23 +15,39 @@ CAR_VALUE = -1
 cmap = cm.Dark2
 cmap.set_bad(color='red')
 
-class RoundaboutSim():
-    def __init__(self, roundabout, show_animation=True):
-        self.exceptions = roundabout.exceptions
-        self.roundabout_area = roundabout.area
-        self.model = roundabout.grid
-        self.cars = []
+####
+# TODO: - asshole_factor
+#       - dick_move()
+####
 
-        self.start_states = np.argwhere(self.model==1)
+
+class RoundaboutSim():
+    def __init__(self, model, density=0.5, steps=100, show_animation=True):
+        # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
+        self.model = model
+        self.aimed_density = density
+        self.true_density = 0
+        self.steps = steps
+        self.exceptions = model.exceptions
+
+        self.road_size = (self.model.grid != 0).sum()
+        self.n_finished = 0
+
+        self.start_states = np.argwhere(self.model.grid == 1)
         assert self.start_states.size != 0, 'This roundabout contains no start states.'
-        self.end_states = np.argwhere(self.model==2)
+        self.end_states = np.argwhere(self.model.grid == 2)
         assert self.end_states.size != 0, 'This roundabout contains no end states.'
+
+        self.free_starts = np.copy(self.start_states)
+        self.cars = []
 
         self.show_animation = show_animation
 
     def __repr__(self):
-        return '\n'.join([np.array2string(row)[1:-1] for row in self.model])
+        return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
+    def set_steps(self, steps):
+        self.steps = steps
 
     def get_cars(self):
         """Get a list of the cars currently on the grid.
@@ -53,10 +70,25 @@ class RoundaboutSim():
             return SOUTH
         elif start_pos[1] == 0:
             return EAST
-        elif start_pos[0] == self.model.shape[0] - 1:
+        elif start_pos[0] == self.model.grid.shape[0] - 1:
             return NORTH
-        elif start_pos[1] == self.model.shape[1] - 1:
+        elif start_pos[1] == self.model.grid.shape[1] - 1:
             return WEST
+
+    def get_grid(self):
+        """Creates a grid with all cars currently on the road. The cells that have a car on them will take on CAR_VALUE.
+
+        Returns:
+            np.array -- The model with all cars currently on the grid.
+        """
+        grid = np.copy(self.model.grid)
+
+        for car in self.cars:
+            r, c = car.cur_pos
+            grid[r][c] = CAR_VALUE
+
+        masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
+        return masked_grid
 
     def draw_model(self, with_cars=True, blocking=True):
         """Draws the model of the roundabout.
@@ -74,30 +106,34 @@ class RoundaboutSim():
         plt.axis('off')
         plt.show(block=blocking)
 
-    def get_grid(self):
-        grid = np.copy(self.model)
-
-        for car in self.cars:
-            r, c = car.cur_pos
-            grid[r][c] = CAR_VALUE
-
-        masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
-        return masked_grid
-
-    def initialize(self, n_cars=5, animate=True):
-        self.cars=[]
-
-        for _ in range(n_cars):
-            start_pos = random_row(self.start_states)[0]
+    def spawn_cars(self):
+        while self.free_starts.size != 0 and self.true_density < self.aimed_density:
+            start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
             car = Car(orientation, start_pos, end_pos)
             self.cars.append(car)
+            self.true_density = len(self.cars) / self.road_size
+
+            # Delete the start position from the list of possible starts
+            self.free_starts = np.delete(self.free_starts, (np.where(
+                (self.free_starts == start_pos).all(axis=1))[0][0]), axis=0)
+
+    def reset(self):
+        self.cars = []
+        self.n_finished = 0
+        self.true_density = 0
+        self.free_starts = np.copy(self.start_states)
+
+    def run(self):
+        """Initializes the simulation."""
+        self.spawn_cars()
+        grid = self.get_grid()
 
         if DEBUG:
             print(self.cars)
 
-        if animate:
+        if self.show_animation:
             fig = plt.figure()
             frame = plt.gca()
             frame.axes.get_xaxis().set_visible(False)
@@ -105,28 +141,28 @@ class RoundaboutSim():
 
             cmap = cm.Dark2
             cmap.set_bad(color='red')
-            grid = self.get_grid()
-            masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
-            sim_grid = plt.imshow(masked_grid, cmap=cmap)
+            sim_grid = plt.imshow(grid, cmap=cmap)
 
-            # Little function that stops the animation when all cars have disappeared
-            def gen():
-                i = 0
-                while self.cars != []:
-                    i += 1
-                    yield i
-
-            anime = animation.FuncAnimation(fig, self.step,
-                                            fargs=(sim_grid,),
-                                            frames=gen, #DETERMINE!!
-                                            interval=1000,
-                                            blit=False)
+            anim = animation.FuncAnimation(fig, self.step,
+                                           fargs=(sim_grid,),
+                                           interval=500,  # MAKE VARIABLE
+                                           frames=self.steps,
+                                           repeat=False
+                                           )
 
             plt.show()
+        else:
+            for i in range(self.steps):
+                self.step(i, grid)
 
     def step(self, i, grid):
+        if DEBUG:
+            print("== Iteration {} ==".format(i))
         self.process_cars()
-        grid.set_data(self.get_grid())
+        self.spawn_cars()
+
+        if self.show_animation:
+            grid.set_data(self.get_grid())
 
         return grid,
 
@@ -146,15 +182,15 @@ class RoundaboutSim():
         self.cars_not_round = []
 
         # Define which cars are on the roundabout.
-        if not self.collision():
-            for car in self.cars:
-                if (car.cur_pos[0] > 1 and car.cur_pos[0] < 9) and \
-                (car.cur_pos[1] > 1 and car.cur_pos[1] < 9):
-                    self.cars_on_round.append(car)
-                else:
-                    self.cars_not_round.append(car)
-        else:
-            sys.exit(1)
+        #if not self.collision():
+        for car in self.cars:
+            if (car.cur_pos[0] > 1 and car.cur_pos[0] < 9) and \
+            (car.cur_pos[1] > 1 and car.cur_pos[1] < 9):
+                self.cars_on_round.append(car)
+            else:
+                self.cars_not_round.append(car)
+        # else:
+        #     sys.exit(1)
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -163,15 +199,17 @@ class RoundaboutSim():
         for car in self.cars_not_round:
             self.drive_outside(car)
 
-        # remove all cars that have finished
-        self.cars = [car for car in self.cars if car.active]
+        self.cars = list(filter(lambda c: c.active, self.cars))
+        self.true_density = len(self.cars) / self.road_size
 
         if DEBUG:
-            print(self.cars)
+            print("CARS ON THE ROAD: {}".format(len(self.cars)))
+            print("DENSITY: {}".format(self.true_density))
+            print("CARS FINISHED: {}".format(self.n_finished))
 
     def drive_roundabout(self, car):
         r, c = car.cur_pos
-        state = self.model[r][c]
+        state = self.model.grid[r][c]
 
         # state 8 defines the exceptions
         if state == 8:
@@ -214,13 +252,17 @@ class RoundaboutSim():
 
     def drive_outside(self, car):
         r, c = car.cur_pos
-        state = self.model[r][c]
+        state = self.model.grid[r][c]
 
         # Check if nothing is in front of the car
         if self.offside_priority(car):
-            print('yes you have checked')
-            if state == 2:
+            if state == 1:
+                self.free_starts = np.append(
+                    self.free_starts, [car.cur_pos], axis=0)
+            elif state == 2:
                 car.toggle_active()
+                self.n_finished += 1
+                return
             car.drive()
 
     def offside_priority(self, car):
@@ -239,7 +281,7 @@ class RoundaboutSim():
                 return False
         return True
 
-    def collision(self):
-        if len(np.unique(self.cars, axis=0)) == len(self.cars):
-            return False
-        return True
+    # def collision(self):
+    #     if len(np.unique(self.cars, axis=0)) == len(self.cars):
+    #         return False
+    #     return True
