@@ -5,6 +5,7 @@ import argparse
 import pandas as pd
 
 from simulator import RoundaboutSim
+from roundabout import (Roundabout, Regular, Turbo, Magic)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -21,7 +22,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     print(args)
 
-    roundabout_path = 'input/{}_roundabout.input'.format(args.roundabout)
 
     r = RoundaboutSim(roundabout_path, density=args.density, steps=args.iterations, show_animation=args.animate)
     df = pd.DataFrame()
