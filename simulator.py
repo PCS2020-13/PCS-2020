@@ -16,7 +16,9 @@ cmap = cm.Dark2
 cmap.set_bad(color='red')
 
 ####
-# TODO: - Reckless driving
+# TODO: - Linker invoeg baan offset priority
+#       - Buitenste baan ofset priority
+#       - Reckless driving
 #         * asshole_factor
 #         * dick_move()
 #       - Different car velocities
@@ -156,6 +158,12 @@ class RoundaboutSim():
                                            )
 
             plt.show()
+            print("== FINAL STATISTICS ==")
+            print("CARS IN TOTAL: {}".format(len(self.cars)))
+            print("CARS FINISHED: {}".format(self.n_finished))
+            print("THROUGHPUT   : {} %".format(round((self.n_finished/len(self.cars)*100), 3)))
+            print("======================")
+
         else:
             for i in range(self.steps):
                 self.step(i, grid)
@@ -181,6 +189,9 @@ class RoundaboutSim():
         5 = Straight
         6 = Right and straight
         7 = Right
+        8 = Special
+        9 = Switch to right lane
+        10 = Switch to left lane
         '''
 
         self.cars_on_round = []
