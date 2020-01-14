@@ -16,15 +16,18 @@ cmap = cm.Dark2
 cmap.set_bad(color='red')
 
 ####
-# TODO: - asshole_factor
-#       - dick_move()
+# TODO: - Reckless driving
+#         * asshole_factor
+#         * dick_move()
+#       - Different car velocities
+#       -
 ####
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.5, steps=100, show_animation=True):
-        self.model = np.loadtxt(model, delimiter = ' ', dtype=int)
-        # self.model = model
+    def __init__(self, model, density=0.01, steps=100, show_animation=True):
+        # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
+        self.model = model
         self.aimed_density = density
         self.true_density = 0
         self.steps = steps
@@ -44,8 +47,9 @@ class RoundaboutSim():
 
         self.show_animation = show_animation
 
-    def __repr__(self):
-        return '\n'.join([np.array2string(row)[1:-1] for row in self.model])
+    def __str__(self):
+        return str(self.model)
+        #return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -183,15 +187,15 @@ class RoundaboutSim():
         self.cars_not_round = []
 
         # Define which cars are on the roundabout.
-        #if not self.collision():
-        for car in self.cars:
-            if (car.cur_pos[0] > 1 and car.cur_pos[0] < 9) and \
-            (car.cur_pos[1] > 1 and car.cur_pos[1] < 9):
-                self.cars_on_round.append(car)
-            else:
-                self.cars_not_round.append(car)
-        # else:
-        #     sys.exit(1)
+        if not self.collision():
+            for car in self.cars:
+                if (car.cur_pos[0] >= self.model.points[0][0][0] and car.cur_pos[0] <= self.model.points[0][1][0]) and \
+                (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
+                    self.cars_on_round.append(car)
+                else:
+                    self.cars_not_round.append(car)
+        else:
+            sys.exit(1)
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -214,37 +218,37 @@ class RoundaboutSim():
 
         # state 8 defines the exceptions
         if state == 8:
-            for i in range(4):
-                grid = i
+            for i in range(2):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    # only count the turns for the middle parts of the roundabout
-                    car.turn_ctr += 1
-                    if car.orientation == np.abs(2 - grid) %4:
+                    if car.orientation == SOUTH:
+                        state = 7
+                    else:
                         state = 5
-                    elif car.orientation == np.abs(2 - (grid + 1)) %4:
-                        state = 4
-            for i in range(4, 8):
-                grid = i
+            for i in range(2, 4):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    car.turn_ctr += 1
-                    if car.orientation == np.abs(2 + grid) %4:
-                        state = 6
-                    elif car.orientation == np.abs(2 + (grid + 1)) %4:
-                        state = 4
-
-        if car.turn_ctr == 0:
-            turn = 0
-        else:
-            turn = np.random.binomial(1, p=((car.turn_ctr-1) * 1/3))
-        outer_turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
+                    if car.orientation == EAST:
+                        state = 7
+                    else:
+                        state = 5
+            for i in range(4, 6):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == NORTH:
+                        state = 7
+                    else:
+                        state = 5
+            for i in range(6, 8):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == WEST:
+                        state = 7
+                    else:
+                        state = 5
 
         if state == 3:
             car.turn_left()
-        elif state == 4:
-            if turn == 0 or outer_turn == 0:
-                car.turn_left()
         elif state == 6:
-            if outer_turn == 0:
+            car.turn_ctr += 1
+            turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
+            if turn == 1:
                 car.turn_right()
         elif state == 7:
             car.turn_right()
@@ -296,7 +300,7 @@ class RoundaboutSim():
                 return False
         return True
 
-    # def collision(self):
-    #     if len(np.unique(self.cars, axis=0)) == len(self.cars):
-    #         return False
-    #     return True
+    def collision(self):
+        if len(np.unique(self.cars, axis=0)) == len(self.cars):
+            return False
+        return True
