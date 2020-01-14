@@ -2,8 +2,9 @@ import numpy as np
 
 class Roundabout():
     def __init__(self):
+        self.exceptions = []
         self.queue = np.array(([]))
-    
+
     # Gets all the indexes between 2 points in the matrix.
     def get_area(self, points):
         area = []
@@ -16,7 +17,6 @@ class Roundabout():
                 for j in range(y1, y2+1):
                     area.append((i,j))
         return area
-
 
 class Regular(Roundabout):
     def __init__(self):
@@ -52,7 +52,6 @@ class Regular(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-
 
 class Turbo(Roundabout):
     def __init__(self):

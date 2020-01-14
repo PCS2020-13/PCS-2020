@@ -2,7 +2,7 @@
 
 from numpy.random import choice
 
-DEBUG = True
+DEBUG = False
 
 NORTH = 0
 EAST = 1

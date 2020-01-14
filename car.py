@@ -8,6 +8,7 @@ class Car:
         self.active = active
         self.p_turn = p_turn
         self.turn_ctr = turn_ctr
+        self.turns = 0
 
     def __repr__(self):
         return '(cur_pos: {}, orientation: {})'.format(self.cur_pos, self.orientation)
@@ -40,9 +41,10 @@ class Car:
         """Make a left turn.
         """
         self.orientation = (self.orientation - 1) % 4
+        self.turns += 1
 
     def turn_right(self):
         """Make a right turn.
         """
         self.orientation = (self.orientation + 1) % 4
-
+        self.turns += 1
