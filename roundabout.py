@@ -3,6 +3,7 @@ import numpy as np
 class Roundabout():
     def __init__(self):
         self.queue = np.array(([]))
+        self.grid = []
 
     # Gets all the indexes between 2 points in the matrix.
     def get_area(self, points):
