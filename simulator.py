@@ -3,6 +3,7 @@ from numpy.lib.recfunctions import append_fields
 import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.animation as animation
+import sys
 
 from utils import (DEBUG, random_row, NORTH, EAST, SOUTH, WEST)
 from car import Car
@@ -14,8 +15,10 @@ cmap = cm.Dark2
 cmap.set_bad(color='red')
 
 class RoundaboutSim():
-    def __init__(self, model_path, show_animation=True):
-        self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
+    def __init__(self, roundabout, show_animation=True):
+        self.exceptions = roundabout.exceptions
+        self.roundabout_area = roundabout.area
+        self.model = roundabout.grid
         self.cars = []
 
         self.start_states = np.argwhere(self.model==1)
@@ -81,7 +84,7 @@ class RoundaboutSim():
         masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
         return masked_grid
 
-    def initialize(self, n_cars=1, animate=True):
+    def initialize(self, n_cars=5, animate=True):
         self.cars=[]
 
         for _ in range(n_cars):
@@ -106,9 +109,16 @@ class RoundaboutSim():
             masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
             sim_grid = plt.imshow(masked_grid, cmap=cmap)
 
+            # Little function that stops the animation when all cars have disappeared
+            def gen():
+                i = 0
+                while self.cars != []:
+                    i += 1
+                    yield i
+
             anime = animation.FuncAnimation(fig, self.step,
                                             fargs=(sim_grid,),
-                                            frames=100, #DETERMINE!!
+                                            frames=gen, #DETERMINE!!
                                             interval=1000,
                                             blit=False)
 
@@ -130,48 +140,28 @@ class RoundaboutSim():
         5 = Straight
         6 = Right and straight
         7 = Right
-
         '''
-        for car in self.cars:
-            r, c = car.cur_pos
-            state = self.model[r][c]
-            exceptions = [[3, 3], [3, 7], [7, 7], [7, 3], [2, 2], [2, 8], [8, 8], [8, 2]]
-            turn = 1/3 * car.turn_ctr
 
-            if self.offside_priority(car):
-                # state 8 defines the exceptions
-                if state == 8:
-                    for i in range(4):
-                        grid = i
-                        if np.array_equal(car.cur_pos, exceptions[i]):
-                            # only count the turns for the middle parts of the roundabout
-                            car.turn_ctr += 1
-                            if car.orientation == np.abs(2 - grid) %4:
-                                state = 5
-                            elif car.orientation == np.abs(2 - (grid + 1)) %4:
-                                state = 4
-                    for i in range(4, 8):
-                        grid = i
-                        if np.array_equal(car.cur_pos, exceptions[i]):
-                            if car.orientation == np.abs(2 + grid) %4:
-                                state = 6
-                            elif car.orientation == np.abs(2 + (grid + 1)) %4:
-                                state = 5
+        self.cars_on_round = []
+        self.cars_not_round = []
 
-                elif state == 3:
-                    car.turn_left()
-                elif state == 4:
-                    if turn:
-                        car.turn_left()
-                elif state == 6:
-                    if turn:
-                        car.turn_right()
-                elif state == 7:
-                    car.turn_right()
-                elif state == 2:
-                    car.toggle_active()
+        # Define which cars are on the roundabout.
+        if not self.collision():
+            for car in self.cars:
+                if (car.cur_pos[0] > 1 and car.cur_pos[0] < 9) and \
+                (car.cur_pos[1] > 1 and car.cur_pos[1] < 9):
+                    self.cars_on_round.append(car)
+                else:
+                    self.cars_not_round.append(car)
+        else:
+            sys.exit(1)
 
-                car.drive()
+        # Let the cars on the roundabout drive first.
+        for car in self.cars_on_round:
+            self.drive_roundabout(car)
+
+        for car in self.cars_not_round:
+            self.drive_outside(car)
 
         # remove all cars that have finished
         self.cars = [car for car in self.cars if car.active]
@@ -179,20 +169,77 @@ class RoundaboutSim():
         if DEBUG:
             print(self.cars)
 
+    def drive_roundabout(self, car):
+        r, c = car.cur_pos
+        state = self.model[r][c]
 
-    # NOG NIET ECHT WERKEND
+        # state 8 defines the exceptions
+        if state == 8:
+            for i in range(4):
+                grid = i
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    # only count the turns for the middle parts of the roundabout
+                    car.turn_ctr += 1
+                    if car.orientation == np.abs(2 - grid) %4:
+                        state = 5
+                    elif car.orientation == np.abs(2 - (grid + 1)) %4:
+                        state = 4
+            for i in range(4, 8):
+                grid = i
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    car.turn_ctr += 1
+                    if car.orientation == np.abs(2 + grid) %4:
+                        state = 6
+                    elif car.orientation == np.abs(2 + (grid + 1)) %4:
+                        state = 4
+
+        if car.turn_ctr == 0:
+            turn = 0
+        else:
+            turn = np.random.binomial(1, p=((car.turn_ctr-1) * 1/3))
+        outer_turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
+
+        if state == 3:
+            car.turn_left()
+        elif state == 4:
+            if turn == 0 or outer_turn == 0:
+                car.turn_left()
+        elif state == 6:
+            if outer_turn == 0:
+                car.turn_right()
+        elif state == 7:
+            car.turn_right()
+        
+        car.drive()
+
+    def drive_outside(self, car):
+        r, c = car.cur_pos
+        state = self.model[r][c]
+
+        # Check if nothing is in front of the car
+        if self.offside_priority(car):
+            print('yes you have checked')
+            if state == 2:
+                car.toggle_active()
+            car.drive()
+
     def offside_priority(self, car):
         check_pos = car.cur_pos
         if car.orientation == NORTH:
-            check_pos = check_pos + [-1, -1]
+            check_pos = check_pos + [-1, 0]
         elif car.orientation == EAST:
-            check_pos = check_pos + [-1, 1]
+            check_pos = check_pos + [0, 1]
         elif car.orientation == SOUTH:
-            check_pos = check_pos + [1, 1]
+            check_pos = check_pos + [1, 0]
         else:
-            check_pos = check_pos + [1, -1]
+            check_pos = check_pos + [0, -1]
 
         for vehicle in self.cars:
             if np.array_equal(vehicle.cur_pos, check_pos):
                 return False
+        return True
+
+    def collision(self):
+        if len(np.unique(self.cars, axis=0)) == len(self.cars):
+            return False
         return True
