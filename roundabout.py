@@ -5,7 +5,7 @@ class Roundabout():
         self.exceptions = []
         self.area = []
         self.queue = np.array(([]))
-    
+
     # Gets all the indexes between 2 points in the matrix.
     def get_area(self, area, x, y):
         x1, y1 = x

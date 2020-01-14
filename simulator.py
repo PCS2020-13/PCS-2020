@@ -21,10 +21,11 @@ cmap.set_bad(color='red')
 
 
 class RoundaboutSim():
-    def __init__(self, model_path, density=0.5, show_animation=True):
+    def __init__(self, model_path, density=0.5, steps=100, show_animation=True):
         self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.aimed_density = density
         self.true_density = 0
+        self.steps = steps
 
         self.road_size = (self.model != 0).sum()
         self.n_finished = 0
@@ -41,6 +42,9 @@ class RoundaboutSim():
 
     def __repr__(self):
         return '\n'.join([np.array2string(row)[1:-1] for row in self.model])
+
+    def set_steps(self, steps):
+        self.steps = steps
 
     def get_cars(self):
         """Get a list of the cars currently on the grid.
@@ -68,6 +72,21 @@ class RoundaboutSim():
         elif start_pos[1] == self.model.shape[1] - 1:
             return WEST
 
+    def get_grid(self):
+        """Creates a grid with all cars currently on the road. The cells that have a car on them will take on CAR_VALUE.
+
+        Returns:
+            np.array -- The model with all cars currently on the grid.
+        """
+        grid = np.copy(self.model)
+
+        for car in self.cars:
+            r, c = car.cur_pos
+            grid[r][c] = CAR_VALUE
+
+        masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
+        return masked_grid
+
     def draw_model(self, with_cars=True, blocking=True):
         """Draws the model of the roundabout.
 
@@ -84,21 +103,6 @@ class RoundaboutSim():
         plt.axis('off')
         plt.show(block=blocking)
 
-    def get_grid(self):
-        """Creates a grid with all cars currently on the road. The cells that have a car on them will take on CAR_VALUE.
-
-        Returns:
-            np.array -- The model with all cars currently on the grid.
-        """
-        grid = np.copy(self.model)
-
-        for car in self.cars:
-            r, c = car.cur_pos
-            grid[r][c] = CAR_VALUE
-
-        masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
-        return masked_grid
-
     def spawn_cars(self):
         while self.free_starts.size != 0 and self.true_density < self.aimed_density:
             start_pos = random_row(self.free_starts)[0]
@@ -112,10 +116,16 @@ class RoundaboutSim():
             self.free_starts = np.delete(self.free_starts, (np.where(
                 (self.free_starts == start_pos).all(axis=1))[0][0]), axis=0)
 
-    def initialize(self):
-        """Initializes the simulation."""
+    def reset(self):
         self.cars = []
+        self.n_finished = 0
+        self.true_density = 0
+        self.free_starts = np.copy(self.start_states)
+
+    def run(self):
+        """Initializes the simulation."""
         self.spawn_cars()
+        grid = self.get_grid()
 
         if DEBUG:
             print(self.cars)
@@ -128,21 +138,30 @@ class RoundaboutSim():
 
             cmap = cm.Dark2
             cmap.set_bad(color='red')
-            grid = self.get_grid()
             sim_grid = plt.imshow(grid, cmap=cmap)
 
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=700,  # MAKE VARIABLE
+                                           interval=500,  # MAKE VARIABLE
+                                           frames=self.steps,
+                                           repeat=False
                                            )
 
             plt.show()
+        else:
+            for i in range(self.steps):
+                self.step(i, grid)
+
+
 
     def step(self, i, grid):
+        if DEBUG:
+            print("== Iteration {} ==".format(i))
         self.process_cars()
         self.spawn_cars()
 
-        grid.set_data(self.get_grid())
+        if self.show_animation:
+            grid.set_data(self.get_grid())
 
         return grid,
 
