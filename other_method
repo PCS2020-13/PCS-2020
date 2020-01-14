@@ -1,0 +1,76 @@
+3 = north
+4 = north and east
+5 = east
+6 = east and south
+7 = south
+8 = south and west
+9 = west
+10 = west and north
+
+if state == 3:
+    car.go_north()
+    elif state == 4:
+        if turn:
+            car.go_north()
+        else:
+            car.go_east()
+    elif state == 5:
+        car.go_east()
+    elif state == 6:
+        if turn:
+            car.go_east()
+        else:
+            car.go_south()
+    elif state == 7:
+        car.go_south()
+    elif state == 8:
+        if turn:
+            car.go_south()
+        else:
+            car.go_west()
+    elif state == 9:
+        car.go_west()
+    elif state == 10:
+        if turn:
+            car.go_west()
+        else:
+            car.go_north()
+    elif state == 1:
+        if car.orientation == NORTH:
+            car.go_north()
+        elif car.orientation == EAST:
+            car.go_east()
+        elif car.orientation == SOUTH:
+            car.go_south()
+        else:
+            car.go_west()
+    elif state == 2:
+        car.toggle_active()
+
+    def go_north(self):
+        """Make a left turn.
+        """
+        self.orientation = NORTH
+        self.cur_pos[0] -= 1
+        return self.cur_pos
+
+    def go_east(self):
+        """Make a left turn.
+        """
+        self.orientation = EAST
+        self.cur_pos[1] += 1
+        return self.cur_pos
+
+    def go_south(self):
+        """Make a left turn.
+        """
+        self.orientation = SOUTH
+        self.cur_pos[0] += 1
+        return self.cur_pos
+
+    def go_west(self):
+        """Make a left turn.
+        """
+        self.orientation = WEST
+        self.cur_pos[1] -= 1
+        return self.cur_pos
