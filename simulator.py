@@ -33,12 +33,12 @@ class RoundaboutSim():
         self.steps = steps
         self.exceptions = model.exceptions
 
-        self.road_size = (self.model != 0).sum()
+        self.road_size = (self.model.grid != 0).sum()
         self.n_finished = 0
 
-        self.start_states = np.argwhere(self.model == 1)
+        self.start_states = np.argwhere(self.model.grid == 1)
         assert self.start_states.size != 0, 'This roundabout contains no start states.'
-        self.end_states = np.argwhere(self.model == 2)
+        self.end_states = np.argwhere(self.model.grid == 2)
         assert self.end_states.size != 0, 'This roundabout contains no end states.'
 
         self.free_starts = np.copy(self.start_states)
@@ -49,7 +49,7 @@ class RoundaboutSim():
 
     def __str__(self):
         return str(self.model)
-        #return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
+        # return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -75,9 +75,9 @@ class RoundaboutSim():
             return SOUTH
         elif start_pos[1] == 0:
             return EAST
-        elif start_pos[0] == self.model.shape[0] - 1:
+        elif start_pos[0] == self.model.grid.shape[0] - 1:
             return NORTH
-        elif start_pos[1] == self.model.shape[1] - 1:
+        elif start_pos[1] == self.model.grid.shape[1] - 1:
             return WEST
 
     def get_grid(self):
@@ -86,7 +86,7 @@ class RoundaboutSim():
         Returns:
             np.array -- The model with all cars currently on the grid.
         """
-        grid = np.copy(self.model)
+        grid = np.copy(self.model.grid)
 
         for car in self.cars:
             r, c = car.cur_pos
@@ -106,7 +106,7 @@ class RoundaboutSim():
             masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
             plt.imshow(masked_grid, cmap=cmap)
         else:
-            plt.imshow(self.model, cmap=cmap)
+            plt.imshow(self.model.grid, cmap=cmap)
 
         plt.axis('off')
         plt.show(block=blocking)
@@ -150,7 +150,7 @@ class RoundaboutSim():
 
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=500,  # MAKE VARIABLE
+                                           interval=100,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -190,14 +190,14 @@ class RoundaboutSim():
         if not self.collision():
             for car in self.cars:
                 if (car.cur_pos[0] >= self.model.points[0][0][0] and car.cur_pos[0] <= self.model.points[0][1][0]) and \
-                (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
+                        (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
                     self.cars_on_round.append(car)
                 else:
                     self.cars_not_round.append(car)
         else:
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
-            sys.exit(1)
+            sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -292,6 +292,7 @@ class RoundaboutSim():
             elif state == 2:
                 car.toggle_active()
                 self.n_finished += 1
+                self.turns_per_car.append(car.turns)
                 return
             car.drive()
 
