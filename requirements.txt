@@ -1,6 +1,4 @@
 matplotlib==3.0.3
 numpy==1.18.0
-<<<<<<< HEAD
-=======
 pandas==0.25.3
->>>>>>> 232ac92be7f9aae6947ad272fe0fa0d509c33b54
+tables==3.6.1

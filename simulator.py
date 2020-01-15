@@ -23,7 +23,7 @@ cmap.set_bad(color='red')
 #
 # OPTIONAL:
 #       - Different car velocities
-#       - 
+#       -
 ####
 
 
@@ -46,12 +46,13 @@ class RoundaboutSim():
 
         self.free_starts = np.copy(self.start_states)
         self.cars = []
+        self.turns_per_car = []
 
         self.show_animation = show_animation
 
     def __str__(self):
         return str(self.model)
-        #return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
+        # return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -108,7 +109,7 @@ class RoundaboutSim():
             masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
             plt.imshow(masked_grid, cmap=cmap)
         else:
-            plt.imshow(self.model, cmap=cmap)
+            plt.imshow(self.model.grid, cmap=cmap)
 
         plt.axis('off')
         plt.show(block=blocking)
@@ -152,7 +153,7 @@ class RoundaboutSim():
 
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=500,  # MAKE VARIABLE
+                                           interval=100,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -204,13 +205,14 @@ class RoundaboutSim():
         if not self.collision():
             for car in self.cars:
                 if (car.cur_pos[0] >= self.model.points[0][0][0] and car.cur_pos[0] <= self.model.points[0][1][0]) and \
-                (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
+                        (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
                     self.cars_on_round.append(car)
                 else:
                     self.cars_not_round.append(car)
         else:
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
+            sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -304,6 +306,7 @@ class RoundaboutSim():
             elif state == 2:
                 car.toggle_active()
                 self.n_finished += 1
+                self.turns_per_car.append(car.turns)
                 return
             car.drive()
 
