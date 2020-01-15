@@ -31,11 +31,11 @@ if __name__ == '__main__':
                         help='print the results to stdout')
     args = parser.parse_args()
 
-    if args.roundabout == 'regular':
+    if args.roundabout.lower() == 'regular':
         roundabout = Regular()
-    elif args.roundabout == 'turbo':
+    elif args.roundabout.lower() == 'turbo':
         roundabout = Turbo()
-    elif args.roundabout == 'magic':
+    elif args.roundabout.lower() == 'magic':
         roundabout = Magic()
     else:
         raise TypeError('Roundabout does not exist.')
