@@ -9,6 +9,20 @@ from simulator import RoundaboutSim
 from roundabout import (Regular, Turbo, Magic)
 from utils import (h5load, h5store)
 
+from concurrent import futures
+
+def run_sim(roundabout, density, steps, show_animation):
+    r = RoundaboutSim(roundabout, density=density,
+                      steps=steps, show_animation=show_animation)
+    r.run()
+    n_finished = r.n_finished
+    n_total = n_finished + len(r.cars)
+    turns_avg = np.mean(r.turns_per_car)
+    turns_std = np.std(r.turns_per_car)
+    data = (float(n_total), float(n_finished), turns_avg, turns_std)
+    return data
+        # return pd.DataFrame(dict(zip(columns, data)), index=[0])
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Driver program for running roundabout simulations.',
@@ -42,7 +56,6 @@ if __name__ == '__main__':
 
     r = RoundaboutSim(roundabout, density=args.density,
                       steps=args.iterations, show_animation=args.animate)
-
     columns = ['n_total', 'n_finished', 'turns_avg', 'turns_std']
     df = pd.DataFrame(columns=columns)
 
@@ -62,6 +75,12 @@ if __name__ == '__main__':
         data = [float(n_total), float(n_finished), turns_avg, turns_std]
         df_temp = pd.DataFrame(dict(zip(columns, data)), index=[0])
         df = df.append(df_temp, ignore_index=True)
+
+    # with futures.ThreadPoolExecutor(max_workers=args.simulations) as executor:
+    #     future_to_roundabout = [executor.submit(run_sim, roundabout, args.density, args.iterations, args.animate) for _ in range(args.simulations)]
+    #     for future in futures.as_completed(future_to_roundabout):
+    #         data  = future.result()
+    #         df = df.append(pd.DataFrame(dict(zip(columns, data)), index=[0]), ignore_index=True)
 
     if args.print:
         print(df)
