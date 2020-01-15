@@ -11,10 +11,6 @@ from car import Car
 
 CAR_VALUE = -1
 
-# Define car color
-cmap = cm.Dark2
-cmap.set_bad(color='red')
-
 ####
 # TODO:
 #       - Reckless driving
@@ -28,14 +24,13 @@ cmap.set_bad(color='red')
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.4, steps=100, show_animation=True):
+    def __init__(self, model, density=0.3, steps=100, show_animation=True):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
         self.true_density = 0
         self.steps = steps
         self.exceptions = model.exceptions
-        print(self.exceptions)
 
         self.road_size = (self.model.grid != 0).sum()
         self.n_finished = 0
@@ -136,7 +131,7 @@ class RoundaboutSim():
         self.true_density = 0
         self.free_starts = np.copy(self.start_states)
 
-    def run(self):
+    def run(self, beautiful=True):
         """Initializes the simulation."""
         self.spawn_cars()
         grid = self.get_grid()
@@ -150,10 +145,18 @@ class RoundaboutSim():
             frame.axes.get_xaxis().set_visible(False)
             frame.axes.get_yaxis().set_visible(False)
 
-            cmap = cm.Dark2
-            cmap.set_bad(color='red')
-            sim_grid = plt.imshow(grid, cmap=cmap)
+            cmap = cm.get_cmap('Dark2')
 
+            if beautiful:
+                norm = cm.colors.Normalize(vmin=0.1, vmax=0.9)
+            else:
+                norm = cm.colors.Normalize(vmin=0.1)
+
+            cmap.set_bad(color='red')
+            cmap.set_under(color='green')
+            cmap.set_over(color='grey')
+
+            sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
                                            interval=100,  # MAKE VARIABLE
@@ -167,6 +170,7 @@ class RoundaboutSim():
             for i in range(self.steps):
                 self.step(i, grid)
         
+        '''
         print("== FINAL STATISTICS ==")
         print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
         print("TOTAL STEPS  : {}".format(self.steps))
@@ -174,6 +178,7 @@ class RoundaboutSim():
         print("CARS FINISHED: {}".format(self.n_finished))
         print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
         print("======================")
+        '''
 
     def step(self, i, grid):
         if DEBUG:
@@ -207,8 +212,10 @@ class RoundaboutSim():
         # Define which cars are on the roundabout.
         if not self.collision():
             for car in self.cars:
-                if (car.cur_pos[0] >= self.model.points[0][0][0] and car.cur_pos[0] <= self.model.points[0][1][0]) and \
-                        (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
+                if (car.cur_pos[0] >= self.model.points[0][0][0] and \
+                        car.cur_pos[0] <= self.model.points[0][1][0]) and \
+                        (car.cur_pos[1] >= self.model.points[0][0][1] and \
+                            car.cur_pos[1] <= self.model.points[0][1][1]):
                     self.cars_on_round.append(car)
                 else:
                     self.cars_not_round.append(car)
@@ -323,7 +330,6 @@ class RoundaboutSim():
 
     def exception_handling(self, car):
         if self.model.name == "Turbo":
-            print(len(self.exceptions))
             for i in range(2):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == EAST:
