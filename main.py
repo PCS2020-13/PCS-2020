@@ -60,7 +60,7 @@ if __name__ == '__main__':
         turns_std = np.std(r.turns_per_car)
         data = [float(n_total), float(n_finished), turns_avg, turns_std]
         df_temp = pd.DataFrame(dict(zip(columns, data)), index=[0])
-        df = df.append(df_temp, ignore_index=True)
+        df = df.append(df_temp, ignore_index=True, sort=False)
 
     if args.print:
         print(df)
