@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import matplotlib.animation as animation
 import sys
+from collections import Counter
 
 from utils import (DEBUG, random_row, NORTH, EAST, SOUTH, WEST)
 from car import Car
@@ -32,6 +33,7 @@ class RoundaboutSim():
         self.true_density = 0
         self.steps = steps
         self.exceptions = model.exceptions
+
 
         self.road_size = (self.model.grid != 0).sum()
         self.n_finished = 0
@@ -149,7 +151,7 @@ class RoundaboutSim():
 
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=500,  # MAKE VARIABLE
+                                           interval=300,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -195,7 +197,8 @@ class RoundaboutSim():
                     self.cars_not_round.append(car)
         else:
             cur_pos = [car.cur_pos for car in self.cars]
-            print(cur_pos)
+            pos, count = np.unique(cur_pos, axis=0, return_counts=True)
+            print(pos[count > 1])
             sys.exit(1)
 
         # Let the cars on the roundabout drive first.
@@ -219,72 +222,55 @@ class RoundaboutSim():
 
         # state 8 defines the exceptions
         if state == 8:
-            for i in range(2):
-                if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    if car.orientation == SOUTH:
-                        state = 7
-                    else:
-                        state = 5
-            for i in range(2, 4):
-                if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    if car.orientation == EAST:
-                        state = 7
-                    else:
-                        state = 5
-            for i in range(4, 6):
-                if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    if car.orientation == NORTH:
-                        state = 7
-                    else:
-                        state = 5
-            for i in range(6, 8):
-                if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    if car.orientation == WEST:
-                        state = 7
-                    else:
-                        state = 5
+            state = self.exception_handling(car)
 
-        if self.offside_priority(car):
-            if state == 3:
+        if state == 3:
+            if self.offside_priority(car, car.look_left()):
                 car.turn_left()
                 car.drive()
-            elif state == 5:
+        elif state == 5:
+            if self.offside_priority(car, car.orientation):
                 car.drive()
-            elif state == 6:
-                car.turn_ctr += 1
-                turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
-                if turn == 1:
-                    car.turn_right()
-                    if self.offside_priority(car):
-                        car.drive()
-                    else:
-                        car.turn_ctr = -1
-                else:
+        elif state == 6:
+            car.turn_ctr += 1
+            prob = (car.turn_ctr * (1/4))
+            if prob > 1:
+                prob = 1
+            turn = np.random.binomial(1, p=prob)
+            if turn == 1:
+                car.turn_right()
+                if self.offside_priority(car, car.orientation):
                     car.drive()
-            elif state == 7:
+                else:
+                    car.turn_ctr = 3
+            else:
+                if self.offside_priority(car, car.orientation):
+                    car.drive()
+        elif state == 7:
+            if self.offside_priority(car, car.look_right()):
                 car.turn_right()
                 car.drive()
-            elif state == 9:
-                car.turn_right()
-                if self.offside_priority(car):
-                    car.drive()
-                    car.turn_left()
-                else:
-                    car.turn_left()
-            elif state == 10:
+        elif state == 9:
+            car.turn_right()
+            if self.offside_priority(car):
+                car.drive()
                 car.turn_left()
-                if self.offside_priority(car):
-                    car.drive()
-                    car.turn_right()
-                else:
-                    car.turn_right()
+            else:
+                car.turn_left()
+        elif state == 10:
+            car.turn_left()
+            if self.offside_priority(car):
+                car.drive()
+                car.turn_right()
+            else:
+                car.turn_right()
 
     def drive_outside(self, car):
         r, c = car.cur_pos
         state = self.model.grid[r][c]
 
         # Check if nothing is in front of the car
-        if self.offside_priority(car):
+        if self.offside_priority(car, car.orientation):
             if state == 1:
                 self.free_starts = np.append(
                     self.free_starts, [car.cur_pos], axis=0)
@@ -294,13 +280,13 @@ class RoundaboutSim():
                 return
             car.drive()
 
-    def offside_priority(self, car):
+    def offside_priority(self, car, orientation):
         check_pos = car.cur_pos
-        if car.orientation == NORTH:
+        if orientation == NORTH:
             check_pos = check_pos + [-1, 0]
-        elif car.orientation == EAST:
+        elif orientation == EAST:
             check_pos = check_pos + [0, 1]
-        elif car.orientation == SOUTH:
+        elif orientation == SOUTH:
             check_pos = check_pos + [1, 0]
         else:
             check_pos = check_pos + [0, -1]
@@ -315,3 +301,50 @@ class RoundaboutSim():
         if len(np.unique(cur_pos, axis=0)) == len(cur_pos):
             return False
         return True
+
+    def exception_handling(self, car):
+        if self.model.name == "Turbo":
+            for i in range(2):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == EAST:
+                        return 7
+                    else:
+                        return 5
+
+            if np.array_equal(car.cur_pos, self.exceptions[2]):
+                    if car.orientation == SOUTH:
+                        return 7
+                    else:
+                        return 5
+
+            for i in range(3, 5):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == WEST:
+                        return 7
+                    else:
+                        return 5
+
+            if np.array_equal(car.cur_pos, self.exceptions[5]):
+                    if car.orientation == NORTH:
+                        return 7
+                    else:
+                        return 5
+
+        # for i in range(2, 4):
+        #     if np.array_equal(car.cur_pos, self.exceptions[i]):
+        #         if car.orientation == EAST:
+        #             return 7
+        #         else:
+        #             return 5
+        # for i in range(4, 6):
+        #     if np.array_equal(car.cur_pos, self.exceptions[i]):
+        #         if car.orientation == NORTH:
+        #             return 7
+        #         else:
+        #             return 5
+        # for i in range(6, 8):
+        #     if np.array_equal(car.cur_pos, self.exceptions[i]):
+        #         if car.orientation == WEST:
+        #             return 7
+        #         else:
+        #             return 5
