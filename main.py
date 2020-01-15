@@ -7,7 +7,6 @@ import numpy as np
 
 from simulator import RoundaboutSim
 from roundabout import (Regular, Turbo, Magic)
-from utils import (h5load, h5store)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -67,8 +66,8 @@ if __name__ == '__main__':
         print(df)
 
     if args.output:
-        filename = '{}/{}_{}_{}.h5'.format(args.output,
+        filename = '{}/{}_{}_{}.csv'.format(args.output,
                                         args.roundabout,
                                         args.density,
                                         args.iterations)
-        h5store(filename, df, **metadata)
+        df.to_csv(filename)
