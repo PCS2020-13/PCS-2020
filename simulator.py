@@ -29,7 +29,7 @@ cmap.set_bad(color='red')
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.3, steps=100, show_animation=True):
+    def __init__(self, model, density=0.4, steps=1000, show_animation=True):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
@@ -155,7 +155,7 @@ class RoundaboutSim():
 
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=300,  # MAKE VARIABLE
+                                           interval=100,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -254,8 +254,8 @@ class RoundaboutSim():
                 prob = 1
             turn = np.random.binomial(1, p=prob)
             if turn == 1:
-                car.turn_right()
-                if self.offside_priority(car, car.orientation):
+                if self.offside_priority(car, car.look_right()):
+                    car.turn_right()
                     car.drive()
                 else:
                     car.turn_ctr = 3
@@ -320,48 +320,55 @@ class RoundaboutSim():
         return True
 
     def exception_handling(self, car):
-        if self.model.name == "Turbo":
-            for i in range(2):
+        # if self.model.name == "Turbo":
+        #     for i in range(2):
+        #         if np.array_equal(car.cur_pos, self.exceptions[i]):
+        #             if car.orientation == EAST:
+        #                 return 7
+        #             else:
+        #                 return 5
+
+        #     if np.array_equal(car.cur_pos, self.exceptions[2]):
+        #             if car.orientation == SOUTH:
+        #                 return 7
+        #             else:
+        #                 return 5
+
+        #     for i in range(3, 5):
+        #         if np.array_equal(car.cur_pos, self.exceptions[i]):
+        #             if car.orientation == WEST:
+        #                 return 7
+        #             else:
+        #                 return 5
+
+        #     if np.array_equal(car.cur_pos, self.exceptions[5]):
+        #             if car.orientation == NORTH:
+        #                 return 7
+        #             else:
+        #                 return 5
+            
+        if self.model.name == "Regular":
+            for i in range(0, 2):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == SOUTH:
+                        return 7
+                    else:
+                        return 5
+            for i in range(2, 4):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == EAST:
                         return 7
                     else:
                         return 5
-
-            if np.array_equal(car.cur_pos, self.exceptions[2]):
-                    if car.orientation == SOUTH:
+            for i in range(4, 6):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == NORTH:
                         return 7
                     else:
                         return 5
-
-            for i in range(3, 5):
+            for i in range(6, 8):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == WEST:
                         return 7
                     else:
                         return 5
-
-            if np.array_equal(car.cur_pos, self.exceptions[5]):
-                    if car.orientation == NORTH:
-                        return 7
-                    else:
-                        return 5
-
-        # for i in range(2, 4):
-        #     if np.array_equal(car.cur_pos, self.exceptions[i]):
-        #         if car.orientation == EAST:
-        #             return 7
-        #         else:
-        #             return 5
-        # for i in range(4, 6):
-        #     if np.array_equal(car.cur_pos, self.exceptions[i]):
-        #         if car.orientation == NORTH:
-        #             return 7
-        #         else:
-        #             return 5
-        # for i in range(6, 8):
-        #     if np.array_equal(car.cur_pos, self.exceptions[i]):
-        #         if car.orientation == WEST:
-        #             return 7
-        #         else:
-        #             return 5
