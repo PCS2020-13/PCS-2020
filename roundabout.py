@@ -20,7 +20,6 @@ class Roundabout():
 
 
     def __str__(self):
-        string = ''
         for i in self.grid:
             for j in i:
                 if j == 0:

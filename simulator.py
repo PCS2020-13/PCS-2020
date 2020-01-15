@@ -16,18 +16,19 @@ cmap = cm.Dark2
 cmap.set_bad(color='red')
 
 ####
-# TODO: - Linker invoeg baan offset priority
-#       - Buitenste baan ofset priority
+# TODO:
 #       - Reckless driving
 #         * asshole_factor
 #         * dick_move()
+#
+# OPTIONAL:
 #       - Different car velocities
 #       - 
 ####
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.1, steps=100, show_animation=True):
+    def __init__(self, model, density=0.3, steps=100, show_animation=True):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
@@ -157,15 +158,18 @@ class RoundaboutSim():
                                            )
 
             plt.show()
-            print("== FINAL STATISTICS ==")
-            print("CARS IN TOTAL: {}".format(len(self.cars)))
-            print("CARS FINISHED: {}".format(self.n_finished))
-            print("THROUGHPUT   : {} %".format(round((self.n_finished/len(self.cars)*100), 3)))
-            print("======================")
 
         else:
             for i in range(self.steps):
                 self.step(i, grid)
+        
+        print("== FINAL STATISTICS ==")
+        print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
+        print("TOTAL STEPS  : {}".format(self.steps))
+        print("CARS IN TOTAL: {}".format(len(self.cars)+self.n_finished))
+        print("CARS FINISHED: {}".format(self.n_finished))
+        print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
+        print("======================")
 
     def step(self, i, grid):
         if DEBUG:
@@ -207,7 +211,6 @@ class RoundaboutSim():
         else:
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
-            sys.exit(1)
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -255,40 +258,39 @@ class RoundaboutSim():
                     else:
                         state = 5
 
-        if self.offside_priority(car):
-            if state == 3:
-                car.turn_left()
-                car.drive()
-            elif state == 5:
-                car.drive()
-            elif state == 6:
-                car.turn_ctr += 1
-                turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
-                if turn == 1:
-                    car.turn_right()
-                    if self.offside_priority(car):
-                        car.drive()
-                    else:
-                        car.turn_ctr = -1
-                else:
-                    car.drive()
-            elif state == 7:
-                car.turn_right()
-                car.drive()
-            elif state == 9:
+        if state == 3:
+            car.turn_left()
+            car.drive()
+        elif state == 5:
+            car.drive()
+        elif state == 6:
+            car.turn_ctr += 1
+            turn = np.random.binomial(1, p=(car.turn_ctr * (1/4)))
+            if turn == 1:
                 car.turn_right()
                 if self.offside_priority(car):
                     car.drive()
-                    car.turn_left()
                 else:
                     car.turn_left()
-            elif state == 10:
+                    car.turn_ctr = 3
+
+        elif state == 7:
+            car.turn_right()
+            car.drive()
+        elif state == 9:
+            car.turn_right()
+            if self.offside_priority(car):
+                car.drive()
                 car.turn_left()
-                if self.offside_priority(car):
-                    car.drive()
-                    car.turn_right()
-                else:
-                    car.turn_right()
+            else:
+                car.turn_left()
+        elif state == 10:
+            car.turn_left()
+            if self.offside_priority(car):
+                car.drive()
+                car.turn_right()
+            else:
+                car.turn_right()
 
     def drive_outside(self, car):
         r, c = car.cur_pos
