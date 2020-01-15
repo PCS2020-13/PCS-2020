@@ -17,16 +17,19 @@ cmap = cm.Dark2
 cmap.set_bad(color='red')
 
 ####
-# TODO: - Reckless driving
+# TODO:
+#       - Reckless driving
 #         * asshole_factor
 #         * dick_move()
+#
+# OPTIONAL:
 #       - Different car velocities
-#       - 
+#       -
 ####
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.1, steps=100, show_animation=True):
+    def __init__(self, model, density=0.3, steps=100, show_animation=True):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
@@ -45,12 +48,13 @@ class RoundaboutSim():
 
         self.free_starts = np.copy(self.start_states)
         self.cars = []
+        self.turns_per_car = []
 
         self.show_animation = show_animation
 
     def __str__(self):
         return str(self.model)
-        #return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
+        # return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -107,7 +111,7 @@ class RoundaboutSim():
             masked_grid = np.ma.masked_where(grid == CAR_VALUE, grid)
             plt.imshow(masked_grid, cmap=cmap)
         else:
-            plt.imshow(self.model, cmap=cmap)
+            plt.imshow(self.model.grid, cmap=cmap)
 
         plt.axis('off')
         plt.show(block=blocking)
@@ -157,9 +161,18 @@ class RoundaboutSim():
                                            )
 
             plt.show()
+
         else:
             for i in range(self.steps):
                 self.step(i, grid)
+        
+        print("== FINAL STATISTICS ==")
+        print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
+        print("TOTAL STEPS  : {}".format(self.steps))
+        print("CARS IN TOTAL: {}".format(len(self.cars)+self.n_finished))
+        print("CARS FINISHED: {}".format(self.n_finished))
+        print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
+        print("======================")
 
     def step(self, i, grid):
         if DEBUG:
@@ -182,6 +195,9 @@ class RoundaboutSim():
         5 = Straight
         6 = Right and straight
         7 = Right
+        8 = Special
+        9 = Switch to right lane
+        10 = Switch to left lane
         '''
 
         self.cars_on_round = []
@@ -191,7 +207,7 @@ class RoundaboutSim():
         if not self.collision():
             for car in self.cars:
                 if (car.cur_pos[0] >= self.model.points[0][0][0] and car.cur_pos[0] <= self.model.points[0][1][0]) and \
-                (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
+                        (car.cur_pos[1] >= self.model.points[0][0][1] and car.cur_pos[1] <= self.model.points[0][1][1]):
                     self.cars_on_round.append(car)
                 else:
                     self.cars_not_round.append(car)
@@ -277,6 +293,7 @@ class RoundaboutSim():
             elif state == 2:
                 car.toggle_active()
                 self.n_finished += 1
+                self.turns_per_car.append(car.turns)
                 return
             car.drive()
 
