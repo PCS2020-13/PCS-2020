@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.random import binomial
+from numpy.random import RandomState
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -10,10 +10,6 @@ from utils import (DEBUG, random_row, NORTH, EAST, SOUTH, WEST)
 from car import Car
 
 CAR_VALUE = -1
-
-# Define car color
-cmap = cm.Dark2
-cmap.set_bad(color='red')
 
 ####
 # TODO:
@@ -26,10 +22,8 @@ cmap.set_bad(color='red')
 #       -
 ####
 
-
 class RoundaboutSim():
     def __init__(self, model, density=0.4, steps=100, show_animation=True):
-        # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
         self.true_density = 0
@@ -53,7 +47,6 @@ class RoundaboutSim():
 
     def __str__(self):
         return str(self.model)
-        # return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -103,7 +96,7 @@ class RoundaboutSim():
         """Draws the model of the roundabout.
 
         Keyword Arguments:
-            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits 
+            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits
             until the figure is closed. Otherwise it waits until a blocking show() somewhere else in the program is called.
             (default: {True})
         """
@@ -166,7 +159,7 @@ class RoundaboutSim():
         else:
             for i in range(self.steps):
                 self.step(i, grid)
-        
+
         print("== FINAL STATISTICS ==")
         print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
         print("TOTAL STEPS  : {}".format(self.steps))
@@ -253,7 +246,7 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            turn = np.random.binomial(1, p=prob)
+            turn = RandomState().binomial(1, p=prob)
             if turn == 1:
                 if self.priority(car, car.look_right()):
                     car.turn_right()
@@ -349,7 +342,7 @@ class RoundaboutSim():
                         return 7
                     else:
                         return 5
-            
+
         elif self.model.name == "Regular":
             for i in range(0, 2):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
