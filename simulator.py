@@ -102,7 +102,9 @@ class RoundaboutSim():
         """Draws the model of the roundabout.
 
         Keyword Arguments:
-            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits until the figure is closed. Otherwise it waits until a blocking show() somewhere else in the program is called. (default: {True})
+            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits 
+            until the figure is closed. Otherwise it waits until a blocking show() somewhere else in the program is called.
+            (default: {True})
         """
         if with_cars:
             grid = self.get_grid()
@@ -153,7 +155,7 @@ class RoundaboutSim():
 
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=100,  # MAKE VARIABLE
+                                           interval=500,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -163,14 +165,7 @@ class RoundaboutSim():
         else:
             for i in range(self.steps):
                 self.step(i, grid)
-        
-        print("== FINAL STATISTICS ==")
-        print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
-        print("TOTAL STEPS  : {}".format(self.steps))
-        print("CARS IN TOTAL: {}".format(len(self.cars)+self.n_finished))
-        print("CARS FINISHED: {}".format(self.n_finished))
-        print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
-        print("======================")
+
 
     def step(self, i, grid):
         if DEBUG:
@@ -210,9 +205,10 @@ class RoundaboutSim():
                 else:
                     self.cars_not_round.append(car)
         else:
-            cur_pos = [car.cur_pos for car in self.cars]
-            print(cur_pos)
-            sys.exit('Cars overlap')
+            pass
+            #cur_pos = [car.cur_pos for car in self.cars]
+            #print(cur_pos)
+            #sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
