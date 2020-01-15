@@ -3,9 +3,9 @@ import numpy as np
 """ The superclass for every roundabout.
 """
 class Roundabout():
-    def __init__(self):
+    def __init__(self, name):
         self.queue = np.array(([]))
-        self.grid = []
+        self.name = name
 
     """ Returns the area ,the square between 2 points, of the grid that is the actual roundabout, as a list of coordinates.
     """
@@ -42,6 +42,10 @@ class Roundabout():
 """
 class Regular(Roundabout):
     def __init__(self):
+<<<<<<< HEAD
+=======
+        Roundabout.__init__(self, "Regular")
+>>>>>>> aaefb45792cc83552592cd12dffc8d8bab72fe19
         self.exceptions = [[3, 11], [4, 12], [17, 3], [16, 4], [24, 16], [25, 17], [11, 25], [12, 24]]
         self.points = [((3, 3),(25, 25))]
         self.area = self.get_area(self.points)
@@ -81,6 +85,7 @@ class Regular(Roundabout):
 """
 class Turbo(Roundabout):
     def __init__(self):
+        Roundabout.__init__(self, "Turbo")
         self.exceptions = [[17, 3], [16, 4], [4, 11], [11, 25], [12, 24], [24, 17]]
         self.points = [((3, 3),(25, 25))]
         self.area = self.get_area(self.points)
@@ -120,6 +125,7 @@ class Turbo(Roundabout):
 """
 class Magic(Roundabout):
     def __init__(self):
+        Roundabout.__init__(self, "Magic")
         self.exceptions = []
         self.points = [((3, 11), (9, 17)), ((11, 19), (17, 25)), ((19, 11), (25, 17)), ((11, 3), (17, 9))]
         self.area = self.get_area(self.points)

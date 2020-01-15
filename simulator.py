@@ -165,7 +165,14 @@ class RoundaboutSim():
         else:
             for i in range(self.steps):
                 self.step(i, grid)
-
+        
+        print("== FINAL STATISTICS ==")
+        print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
+        print("TOTAL STEPS  : {}".format(self.steps))
+        print("CARS IN TOTAL: {}".format(len(self.cars)+self.n_finished))
+        print("CARS FINISHED: {}".format(self.n_finished))
+        print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
+        print("======================")
 
     def step(self, i, grid):
         if DEBUG:

@@ -48,3 +48,13 @@ class Car:
         """
         self.orientation = (self.orientation + 1) % 4
         self.turns += 1
+
+    def look_left(self):
+        """Make a left turn.
+        """
+        return (self.orientation - 1) % 4
+
+    def look_right(self):
+        """Make a left turn.
+        """
+        return (self.orientation + 1) % 4
