@@ -23,7 +23,8 @@ CAR_VALUE = -1
 ####
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.5, steps=100, show_animation=True):
+    def __init__(self, model, density=0.05, steps=1000, show_animation=True):
+        # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
         self.true_density = 0
@@ -156,7 +157,7 @@ class RoundaboutSim():
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=200,  # MAKE VARIABLE
+                                           interval=500,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -180,7 +181,10 @@ class RoundaboutSim():
     def step(self, i, grid):
         if DEBUG:
             print("== Iteration {} ==".format(i))
-        self.process_cars()
+        if self.model.name == 'Magic':
+            self.process_cars_magic()
+        else:
+            self.process_cars()
         self.spawn_cars()
 
         if self.show_animation:
@@ -203,24 +207,24 @@ class RoundaboutSim():
         10 = Switch to left lane
         '''
 
+        # if self.model.name == 'Magic':
+        #     self.process_cars_magic()
+        # else:
+
         self.cars_on_round = []
         self.cars_not_round = []
 
         # Define which cars are on the roundabout.
         if not self.collision():
             for car in self.cars:
-                if (car.cur_pos[0] >= self.model.points[0][0][0] and \
-                        car.cur_pos[0] <= self.model.points[0][1][0]) and \
-                        (car.cur_pos[1] >= self.model.points[0][0][1] and \
-                            car.cur_pos[1] <= self.model.points[0][1][1]):
+                if list(car.cur_pos) in self.model.area:
                     self.cars_on_round.append(car)
                 else:
                     self.cars_not_round.append(car)
         else:
-            pass
-            #cur_pos = [car.cur_pos for car in self.cars]
-            #print(cur_pos)
-            #sys.exit('Cars overlap')
+            cur_pos = [car.cur_pos for car in self.cars]
+            print(cur_pos)
+            sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -329,7 +333,33 @@ class RoundaboutSim():
         return True
 
     def exception_handling(self, car):
-        if self.model.name == "Turbo":
+        if self.model.name == "Regular":
+            for i in range(0, 2):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == SOUTH:
+                        return 7
+                    else:
+                        return 5
+            for i in range(2, 4):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == EAST:
+                        return 7
+                    else:
+                        return 5
+            for i in range(4, 6):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == NORTH:
+                        return 7
+                    else:
+                        return 5
+            for i in range(6, 8):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == WEST:
+                        return 7
+                    else:
+                        return 5
+
+        elif self.model.name == "Turbo":
             for i in range(2):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == EAST:
@@ -356,28 +386,208 @@ class RoundaboutSim():
                     else:
                         return 5
 
-        elif self.model.name == "Regular":
-            for i in range(0, 2):
-                if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    if car.orientation == SOUTH:
-                        return 7
-                    else:
-                        return 5
-            for i in range(2, 4):
+        elif self.model.name == 'Magic':
+            for i in range(0, 4):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == EAST:
-                        return 7
+                        return 6
                     else:
-                        return 5
-            for i in range(4, 6):
+                        return 4
+
+            for i in range(4, 8):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
-                    if car.orientation == NORTH:
-                        return 7
+                    if car.orientation == SOUTH:
+                        return 6
                     else:
-                        return 5
-            for i in range(6, 8):
+                        return 4
+
+            for i in range(8, 12):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == WEST:
-                        return 7
+                        return 6
                     else:
+                        return 4
+
+            for i in range(12, 16):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == NORTH:
+                        return 6
+                    else:
+                        return 4
+
+            for i in range(16, 18):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == EAST:
                         return 5
+                    else:
+                        return 4
+
+            for i in range(18, 20):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == SOUTH:
+                        return 5
+                    else:
+                        return 4
+
+            for i in range(20, 22):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == WEST:
+                        return 5
+                    else:
+                        return 4
+            
+            for i in range(22, 24):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == NORTH:
+                        return 5
+                    else:
+                        return 4
+
+            for i in range(24, 26):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == NORTH:
+                        return 5
+                    else:
+                        return 3
+
+            for i in range(26, 28):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == EAST:
+                        return 5
+                    else:
+                        return 3
+            
+            for i in range(28, 30):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == SOUTH:
+                        return 5
+                    else:
+                        return 3
+
+            for i in range(30, 32):
+                if np.array_equal(car.cur_pos, self.exceptions[i]):
+                    if car.orientation == WEST:
+                        return 5
+                    else:
+                        return 3
+
+    def process_cars_magic(self):
+        self.cars_on_round = []
+        self.cars_not_round = []
+
+        # Define which cars are on the roundabout.
+        if not self.collision():
+            for car in self.cars:
+                if list(car.cur_pos) in self.model.area:
+                    self.cars_on_round.append(car)
+                else:
+                    self.cars_not_round.append(car)
+        else:
+            cur_pos = [car.cur_pos for car in self.cars]
+            print(cur_pos)
+            sys.exit('Cars overlap')
+
+        # Let the cars on the roundabout drive first.
+        for car in self.cars_on_round:
+            self.drive_magic(car)
+
+        for car in self.cars_not_round:
+            self.drive_magic(car)
+
+        self.cars = list(filter(lambda c: c.active, self.cars))
+        self.true_density = len(self.cars) / self.road_size
+
+        if DEBUG:
+            print("CARS ON THE ROAD: {}".format(len(self.cars)))
+            print("DENSITY: {}".format(self.true_density))
+            print("CARS FINISHED: {}".format(self.n_finished))
+
+    def drive_magic(self, car):
+        r, c = car.cur_pos
+        state = self.model.grid[r][c]
+
+        # state 8 defines the exceptions
+        if state == 8:
+            state = self.exception_handling(car)
+
+        if state == 1:
+            self.free_starts = np.append(
+                self.free_starts, [car.cur_pos], axis=0)
+            if self.priority(car, car.orientation):
+                car.drive()
+        elif state == 2:
+            car.toggle_active()
+            self.n_finished += 1
+            self.turns_per_car.append(car.turns)
+            return
+        elif state == 3:
+            if self.priority(car, car.look_left()):
+                car.turn_left()
+                car.drive()
+        elif state == 4:
+            car.turn_ctr += 1
+            prob = car.turn_ctr * (1/4)
+            if prob > 1:
+                prob = 1
+            turn = np.random.binomial(1, p=prob)
+            if turn == 1:
+                if self.priority(car, car.look_left()):
+                    car.turn_left()
+                    car.drive()
+                else:
+                    car.turn_ctr = 3
+            else:
+                if self.priority(car, car.orientation):
+                    car.drive()
+        elif state == 5:
+            if self.priority(car, car.orientation):
+                car.drive()
+        elif state == 6:
+            car.turn_ctr += 1
+            prob = car.turn_ctr * (1/4)
+            if prob > 1:
+                prob = 1
+            turn = np.random.binomial(1, p=prob)
+            if turn == 1:
+                if self.priority(car, car.look_right()):
+                    car.turn_right()
+                    car.drive()
+                else:
+                    car.turn_ctr = 3
+            else:
+                if self.priority(car, car.orientation):
+                    car.drive()
+        elif state == 7:
+            if self.priority(car, car.look_right()):
+                car.turn_right()
+                car.drive()
+        elif state == 9:
+            if car.switch_ctr == 0 and self.priority(car, car.look_right()):
+                    car.switch_ctr += 1
+                    car.turn_right()
+                    car.drive()
+                    car.turn_left()
+            else:
+                car.drive()
+        elif state == 10:
+            if car.switch_ctr == 0 and self.priority(car, car.look_left()):
+                    car.switch_ctr += 1
+                    car.turn_left()
+                    car.drive()
+                    car.turn_right()
+            else:
+                car.drive()
+        # elif state == 9:
+        #     car.turn_right()
+        #     if self.priority(car, car.orientation):
+        #         car.drive()
+        #         car.turn_left()
+        #     else:
+        #         car.turn_left()
+        # elif state == 10:
+        #     car.turn_left()
+        #     if self.priority(car, car.orientation):
+        #         car.drive()
+        #         car.turn_right()
+        #     else:
+        #         car.turn_right()

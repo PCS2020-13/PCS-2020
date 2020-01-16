@@ -17,7 +17,7 @@ class Roundabout():
             x2, y2 = point[1]
             for i in range(x1, x2+1):
                 for j in range(y1, y2+1):
-                    area.append((i,j))
+                    area.append([i,j])
         return area
 
     """ Creates a more readable version of the roundabout. """
@@ -119,7 +119,11 @@ class Turbo(Roundabout):
 class Magic(Roundabout):
     def __init__(self):
         Roundabout.__init__(self, "Magic")
-        self.exceptions = []
+        self.outer_exceptions = [[25, 11], [25, 12], [17, 3], [17, 4], [12, 3], [11, 3], [3, 11], [4, 11], [3, 16], [3, 17],
+                            [11, 24], [11, 25], [16, 25], [17, 25], [24, 17], [25, 17],
+                            [24, 12], [16, 4], [12, 4], [4, 12], [4, 16], [12, 24], [16, 24], [24, 16]]
+        self.inner_exceptions = [[17, 9], [16, 8], [9, 11], [8, 12], [11, 19], [12, 20], [19, 17], [20, 16]]
+        self.exceptions = self.outer_exceptions + self.inner_exceptions
         self.points = [((3, 11), (9, 17)), ((11, 19), (17, 25)), ((19, 11), (25, 17)), ((11, 3), (17, 9))]
         self.area = self.get_area(self.points)
         self.grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
