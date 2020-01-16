@@ -174,11 +174,10 @@ class RoundaboutSim():
 
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             sim_title = plt.title("density = {}".format(self.true_density))
-            print(sim_title)
             # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,sim_title),
-                                           interval=200,
+                                           interval=20,
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -271,7 +270,7 @@ class RoundaboutSim():
                 print("DENSITY: {}".format(self.true_density))
                 print("CARS FINISHED: {}".format(self.n_finished))
 
-    def drive_roundabout(self, car):
+    def drive_roundabout(self, car, wait_ctr=2):
         """Let a car drive on the roundabout.
 
         Arguments:
@@ -296,6 +295,11 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
+
+            # Checks if car stands still for more than 3 turns
+            if car.prev_pos[1] >= wait_ctr:
+                prob = 1-prob
+
             turn = RandomState().binomial(1, p=prob)
             if turn == 1:
                 if self.priority(car, car.look_right()):
@@ -349,6 +353,12 @@ class RoundaboutSim():
                     car.drive()
             elif self.priority(car, car.orientation):
                 car.drive()
+
+        if np.array_equal(car.cur_pos, car.prev_pos[0]):
+            car.prev_pos[1] += 1
+        else:
+            car.prev_pos[1] = 0
+        car.prev_pos[0] = car.cur_pos
 
     def drive_outside(self, car):
         """Let a car drive outside of the roundabout.
@@ -587,7 +597,7 @@ class RoundaboutSim():
             print("DENSITY: {}".format(self.true_density))
             print("CARS FINISHED: {}".format(self.n_finished))
 
-    def drive_magic(self, car):
+    def drive_magic(self, car, wait_ctr=2):
         r, c = car.cur_pos
         state = self.model.grid[r][c]
 
@@ -614,6 +624,11 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
+            
+            # Checks if car stands still for more than 3 turns
+            if car.prev_pos[1] >= wait_ctr:
+                prob = 1-prob
+
             turn = np.random.binomial(1, p=1/2)
             if turn == 1:
                 if self.priority(car, car.look_left()):
@@ -632,6 +647,11 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
+            
+            # Checks if car stands still for more than 3 turns
+            if car.prev_pos[1] >= wait_ctr:
+                prob = 1-prob
+
             turn = np.random.binomial(1, p=1/2)
             if turn == 1:
                 if self.priority(car, car.look_right()):
@@ -685,3 +705,9 @@ class RoundaboutSim():
                     car.drive()
             elif self.priority(car, car.orientation):
                 car.drive()
+        
+        if np.array_equal(car.cur_pos, car.prev_pos[0]):
+            car.prev_pos[1] += 1
+        else:
+            car.prev_pos[1] = 0
+        car.prev_pos[0] = car.cur_pos
