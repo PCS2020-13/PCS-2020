@@ -156,6 +156,7 @@ class RoundaboutSim():
 
         if self.show_animation:
             fig = plt.figure()
+            fig.canvas.set_window_title("Roundabout simulator: {}".format(self.model.name))
             frame = plt.gca()
             frame.axes.get_xaxis().set_visible(False)
             frame.axes.get_yaxis().set_visible(False)
@@ -172,9 +173,11 @@ class RoundaboutSim():
             cmap.set_over(color='grey')
 
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
+            sim_title = plt.title("density = {}".format(self.true_density))
+            print(sim_title)
             # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
-                                           fargs=(sim_grid,),
+                                           fargs=(sim_grid,sim_title),
                                            interval=200,
                                            frames=self.steps,
                                            repeat=False
@@ -195,7 +198,7 @@ class RoundaboutSim():
             print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
             print("======================")
 
-    def step(self, i, grid):
+    def step(self, i, grid, title):
         """Calculates the state of the roundabout in the next time step.
 
         Arguments:
@@ -214,6 +217,7 @@ class RoundaboutSim():
         self.spawn_cars()
 
         if self.show_animation:
+            title.set_text("density = {}".format(self.true_density))
             grid.set_data(self.get_grid())
 
         return grid,
