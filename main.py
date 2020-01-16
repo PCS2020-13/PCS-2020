@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+###
+# main.py
+#
+# Driver program for running roundabout simulations.
+# This program can be called from the command-line with different options.
+# Run './main.py -h' for a complete overview of all options.
+###
+
 import argparse
 
 import pandas as pd
@@ -29,7 +37,7 @@ def run_sim(roundabout, density, steps):
     n_total = n_finished + len(r.cars)
     turns_avg = np.mean(r.turns_per_car)
     turns_std = np.std(r.turns_per_car)
-    data = (float(n_total), float(n_finished), turns_avg, turns_std)
+    data = (n_total, n_finished, turns_avg, turns_std)
     return data
 
 
@@ -70,8 +78,8 @@ if __name__ == '__main__':
     df = pd.DataFrame(columns=columns)
 
     if args.multithreading:
-        # Automatically use the number of processors on the computer.
-        with futures.ProcessPoolExecutor(max_workers=4) as executor:
+        # Automatically uses the number of processors on the computer.
+        with futures.ProcessPoolExecutor() as executor:
             future_to_roundabout = [executor.submit(
                 run_sim, roundabout, args.density, args.iterations) for _ in range(args.simulations)]
             for future in futures.as_completed(future_to_roundabout):
@@ -80,7 +88,7 @@ if __name__ == '__main__':
                     dict(zip(columns, data)), index=[0]), ignore_index=True, sort=False)
     else:
         r = RoundaboutSim(roundabout, density=args.density,
-                        steps=args.iterations, show_animation=args.animate)
+                          steps=args.iterations, show_animation=args.animate)
         for n in range(args.simulations):
             r.reset()
             r.run()
