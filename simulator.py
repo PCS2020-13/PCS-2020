@@ -175,11 +175,7 @@ class RoundaboutSim():
             # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-<<<<<<< HEAD
                                            interval=200,
-=======
-                                           interval=500,  # MAKE VARIABLE
->>>>>>> b89e5e8c173e06a4637ad8fdc3d7859d4149fe88
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -248,25 +244,14 @@ class RoundaboutSim():
         # Define which cars are on the roundabout.
         if not self.collision():
             for car in self.cars:
-<<<<<<< HEAD
-                if (car.cur_pos[0] >= self.model.points[0][0][0] and
-                        car.cur_pos[0] <= self.model.points[0][1][0]) and \
-                        (car.cur_pos[1] >= self.model.points[0][0][1] and
-                            car.cur_pos[1] <= self.model.points[0][1][1]):
-=======
                 if list(car.cur_pos) in self.model.area:
->>>>>>> b89e5e8c173e06a4637ad8fdc3d7859d4149fe88
                     self.cars_on_round.append(car)
                 else:
                     self.cars_not_round.append(car)
         else:
-<<<<<<< HEAD
-            print('Cars overlap')
-=======
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
             sys.exit('Cars overlap')
->>>>>>> b89e5e8c173e06a4637ad8fdc3d7859d4149fe88
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -399,7 +384,6 @@ class RoundaboutSim():
         return True
 
     def exception_handling(self, car):
-<<<<<<< HEAD
         """Handles special cases for turning cars, depending on the type of roundabout.
 
         Arguments:
@@ -408,8 +392,6 @@ class RoundaboutSim():
         Returns:
             int -- The state of the position of the car, depending on the exception.
         """
-        if self.model.name == "Turbo":
-=======
         if self.model.name == "Regular":
             for i in range(0, 2):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
@@ -437,7 +419,6 @@ class RoundaboutSim():
                         return 5
 
         elif self.model.name == "Turbo":
->>>>>>> b89e5e8c173e06a4637ad8fdc3d7859d4149fe88
             for i in range(2):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == EAST:
@@ -513,7 +494,7 @@ class RoundaboutSim():
                         return 5
                     else:
                         return 4
-            
+
             for i in range(22, 24):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == NORTH:
@@ -534,7 +515,7 @@ class RoundaboutSim():
                         return 5
                     else:
                         return 3
-            
+
             for i in range(28, 30):
                 if np.array_equal(car.cur_pos, self.exceptions[i]):
                     if car.orientation == SOUTH:
@@ -550,6 +531,7 @@ class RoundaboutSim():
                         return 3
 
     def process_cars_magic(self):
+        """Special function for processing cars on the magic roundabout."""
         self.cars_on_round = []
         self.cars_not_round = []
 
