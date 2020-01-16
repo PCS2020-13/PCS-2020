@@ -9,8 +9,9 @@ import numpy as np
 
 class Roundabout():
     """ The superclass for every roundabout."""
-    def __init__(self, name):
+    def __init__(self, name, grid):
         self.name = name
+        self.grid = grid
 
     def get_area(self, points):
         """Provides the area (the square between 2 points) of the grid that is the actual roundabout as a list of coordinates.
@@ -51,11 +52,10 @@ class Roundabout():
 class Regular(Roundabout):
     """The class for the regular roundabout containing the exceptions, actual roundabout area and the grid of the roundabout itself."""
     def __init__(self):
-        Roundabout.__init__(self, "Regular")
         self.exceptions = [[3, 11], [4, 12], [17, 3], [16, 4], [24, 16], [25, 17], [11, 25], [12, 24]]
         self.points = [((3, 3),(25, 25))]
         self.area = self.get_area(self.points)
-        self.grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 3, 5, 5, 5, 5, 10,5, 5, 8, 5, 5, 5, 5, 5, 6, 5, 5, 5, 5, 5, 5, 5, 3, 0, 0, 0],
@@ -84,16 +84,16 @@ class Regular(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        Roundabout.__init__(self, "Regular", grid)
 
 
 class Turbo(Roundabout):
     """The class for the Turbo roundabout containing the exceptions, actual roundabout area and the grid of the roundabout itself."""
     def __init__(self):
-        Roundabout.__init__(self, "Turbo")
         self.exceptions = [[17, 3], [16, 4], [4, 11], [11, 25], [12, 24], [24, 17]]
         self.points = [((3, 3),(25, 25))]
         self.area = self.get_area(self.points)
-        self.grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 7, 5, 5, 5, 5, 5, 5, 5, 3, 0, 0, 0],
@@ -122,12 +122,12 @@ class Turbo(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        Roundabout.__init__(self, "Turbo", grid)
 
 
 class Magic(Roundabout):
     """The class for the Magic roundabout containing the exceptions, actual roundabout area and the grid of the roundabout itself."""
     def __init__(self):
-        Roundabout.__init__(self, "Magic")
         self.outer_exceptions = [[25, 11], [25, 12], [17, 3], [17, 4], [12, 3], [11, 3], [3, 11], [4, 11], [3, 16], [3, 17],
                             [11, 24], [11, 25], [16, 25], [17, 25], [24, 17], [25, 17],
                             [24, 12], [16, 4], [12, 4], [4, 12], [4, 16], [12, 24], [16, 24], [24, 16]]
@@ -135,7 +135,7 @@ class Magic(Roundabout):
         self.exceptions = self.outer_exceptions + self.inner_exceptions
         self.points = [((3, 11), (9, 17)), ((11, 19), (17, 25)), ((19, 11), (25, 17)), ((11, 3), (17, 9))]
         self.area = self.get_area(self.points)
-        self.grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        grid = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 3, 5, 5, 5, 5, 10,5, 5, 8, 5, 5, 5, 5, 8, 8, 5, 5, 5, 5, 5, 5, 5, 3, 0, 0, 0],
@@ -164,3 +164,4 @@ class Magic(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 0, 0, 0, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+        Roundabout.__init__(self, "Magic", grid)

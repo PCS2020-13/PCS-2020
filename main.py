@@ -63,6 +63,7 @@ if __name__ == '__main__':
                         help='print the results to stdout')
     parser.add_argument('-m', '--multithreading', action='store_true',
                         help='use multithreading to speed up the simulation process')
+
     args = parser.parse_args()
 
     if args.roundabout.lower() == 'regular':

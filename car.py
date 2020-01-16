@@ -57,11 +57,17 @@ class Car:
         self.turns += 1
 
     def look_left(self):
-        """Make a left turn.
+        """Look to the position left of the car.
+
+        Returns:
+            int -- The orientation left of the car.
         """
         return (self.orientation - 1) % 4
 
     def look_right(self):
-        """Make a left turn.
+        """Look to the position right of the car.
+
+        Returns:
+            int -- The orientation right of the car.
         """
         return (self.orientation + 1) % 4
