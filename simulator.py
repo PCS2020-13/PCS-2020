@@ -193,7 +193,7 @@ class RoundaboutSim():
             # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,sim_title),
-                                           interval=100,
+                                           interval=25,
                                            frames=self.steps,
                                            repeat=False
                                            )
