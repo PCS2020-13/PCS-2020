@@ -140,6 +140,9 @@ class RoundaboutSim():
             start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
+            # if RandomState().binomial(1, p=0.01):
+            #     car = Car(orientation, start_pos, end_pos, asshole_factor=0.5)
+            # else:
             car = Car(orientation, start_pos, end_pos)
             self.cars.append(car)
             self.true_density = len(self.cars) / self.road_size

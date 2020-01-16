@@ -9,7 +9,7 @@ from utils import (NORTH, EAST, SOUTH, WEST)
 
 
 class Car:
-    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0, switch_ctr=0):
+    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0, switch_ctr=0, asshole_factor=0):
         self.orientation = orientation
         self.cur_pos = start_pos
         self.prev_pos = [start_pos, 0]
@@ -18,6 +18,7 @@ class Car:
         self.turn_ctr = turn_ctr
         self.switch_ctr = switch_ctr
         self.turns = 0
+        self.asshole_factor = asshole_factor
 
     def __repr__(self):
         return '(cur_pos: {}, orientation: {})'.format(self.cur_pos, self.orientation)
