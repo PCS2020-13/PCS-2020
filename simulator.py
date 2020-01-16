@@ -224,7 +224,7 @@ class RoundaboutSim():
         else:
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
-            #sys.exit('Cars overlap')
+            sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -485,7 +485,7 @@ class RoundaboutSim():
         else:
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
-            sys.exit('Cars overlap')
+            #sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
