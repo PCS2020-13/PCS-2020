@@ -159,7 +159,7 @@ class RoundaboutSim():
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=100,  # MAKE VARIABLE
+                                           interval=200,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )

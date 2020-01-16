@@ -1,18 +1,18 @@
 import numpy as np
 
-""" The superclass for every roundabout.
-"""
+""" The superclass for every roundabout. """
 class Roundabout():
     def __init__(self, name):
         self.queue = np.array(([]))
         self.name = name
 
-    """ Returns the area ,the square between 2 points, of the grid that is the actual roundabout, as a list of coordinates.
-    """
+    """ Returns the area ,the square between 2 points, of the grid that is the 
+        actual roundabout, as a list of coordinates. """
     def get_area(self, points):
         area = []
 
-        # Each element in points is a tuple of 2 coordinates. Each coordinate is a tuple of its x and y value.s
+        # Each element in points is a tuple of 2 coordinates.
+        # Each coordinate is a tuple of its x and y value.s
         for point in points:
             x1, y1 = point[0]
             x2, y2 = point[1]
@@ -21,8 +21,7 @@ class Roundabout():
                     area.append((i,j))
         return area
 
-    """ Creates a more readable version of the roundabout.
-    """
+    """ Creates a more readable version of the roundabout. """
     def __str__(self):
         string = ''
         for i in self.grid:
@@ -37,9 +36,8 @@ class Roundabout():
             string += '\n'
         return string
 
-""" The class for the regular roundabout containing the exceptions, actual roundabout area and the grid of the roundabout
-    itself.
-"""
+""" The class for the regular roundabout containing the exceptions, actual 
+    roundabout area and the grid of the roundabout itself. """
 class Regular(Roundabout):
     def __init__(self):
         Roundabout.__init__(self, "Regular")
@@ -77,9 +75,8 @@ class Regular(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 
-""" The class for the Turbo roundabout containing the exceptions, actual roundabout area and the grid of the roundabout
-    itself.
-"""
+""" The class for the Turbo roundabout containing the exceptions,
+    actual roundabout area and the grid of the roundabout itself. """
 class Turbo(Roundabout):
     def __init__(self):
         Roundabout.__init__(self, "Turbo")
@@ -117,9 +114,8 @@ class Turbo(Roundabout):
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 
-""" The class for the Magic roundabout containing the exceptions, actual roundabout area and the grid of the roundabout
-    itself.
-"""
+""" The class for the Magic roundabout containing the exceptions,
+    actual roundabout area and the grid of the roundabout itself. """
 class Magic(Roundabout):
     def __init__(self):
         Roundabout.__init__(self, "Magic")
