@@ -1,5 +1,12 @@
-## Car class
+###
+# car.py
+#
+# This file contains the Car class, which represents an individual car on the
+# roundabout.
+###
+
 from utils import (NORTH, EAST, SOUTH, WEST)
+
 
 class Car:
     def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0):
@@ -14,6 +21,7 @@ class Car:
         return '(cur_pos: {}, orientation: {})'.format(self.cur_pos, self.orientation)
 
     def toggle_active(self):
+        """Toggle whether a car is active or not (e.g. still participating in the traffic of the roundabout)."""
         self.active = not self.active
 
     def drive(self):
@@ -38,14 +46,12 @@ class Car:
         return self.cur_pos
 
     def turn_left(self):
-        """Make a left turn.
-        """
+        """Make a left turn."""
         self.orientation = (self.orientation - 1) % 4
         self.turns += 1
 
     def turn_right(self):
-        """Make a right turn.
-        """
+        """Make a right turn."""
         self.orientation = (self.orientation + 1) % 4
         self.turns += 1
 
