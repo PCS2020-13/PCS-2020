@@ -157,7 +157,7 @@ class RoundaboutSim():
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=500,  # MAKE VARIABLE
+                                           interval=100,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -224,7 +224,7 @@ class RoundaboutSim():
         else:
             cur_pos = [car.cur_pos for car in self.cars]
             print(cur_pos)
-            sys.exit('Cars overlap')
+            #sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
         for car in self.cars_on_round:
@@ -282,7 +282,7 @@ class RoundaboutSim():
                     car.turn_right()
                     car.drive()
                     car.turn_left()
-            else:
+            elif self.priority(car, car.orientation):
                 car.drive()
 
         elif state == 10:
@@ -291,7 +291,7 @@ class RoundaboutSim():
                     car.turn_left()
                     car.drive()
                     car.turn_right()
-            else:
+            elif self.priority(car, car.orientation):
                 car.drive()
 
     def drive_outside(self, car):
@@ -529,7 +529,7 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            turn = np.random.binomial(1, p=prob)
+            turn = np.random.binomial(1, p=1/2)
             if turn == 1:
                 if self.priority(car, car.look_left()):
                     car.turn_left()
@@ -547,7 +547,7 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            turn = np.random.binomial(1, p=prob)
+            turn = np.random.binomial(1, p=1/2)
             if turn == 1:
                 if self.priority(car, car.look_right()):
                     car.turn_right()
