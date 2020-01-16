@@ -157,7 +157,7 @@ class RoundaboutSim():
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
-                                           interval=500,  # MAKE VARIABLE
+                                           interval=100,  # MAKE VARIABLE
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -207,39 +207,38 @@ class RoundaboutSim():
         10 = Switch to left lane
         '''
 
-        # if self.model.name == 'Magic':
-        #     self.process_cars_magic()
-        # else:
-
-        self.cars_on_round = []
-        self.cars_not_round = []
-
-        # Define which cars are on the roundabout.
-        if not self.collision():
-            for car in self.cars:
-                if list(car.cur_pos) in self.model.area:
-                    self.cars_on_round.append(car)
-                else:
-                    self.cars_not_round.append(car)
+        if self.model.name == 'Magic':
+            self.process_cars_magic()
         else:
-            cur_pos = [car.cur_pos for car in self.cars]
-            print(cur_pos)
-            sys.exit('Cars overlap')
+            self.cars_on_round = []
+            self.cars_not_round = []
 
-        # Let the cars on the roundabout drive first.
-        for car in self.cars_on_round:
-            self.drive_roundabout(car)
+            # Define which cars are on the roundabout.
+            if not self.collision():
+                for car in self.cars:
+                    if list(car.cur_pos) in self.model.area:
+                        self.cars_on_round.append(car)
+                    else:
+                        self.cars_not_round.append(car)
+            else:
+                cur_pos = [car.cur_pos for car in self.cars]
+                print(cur_pos)
+                sys.exit('Cars overlap')
 
-        for car in self.cars_not_round:
-            self.drive_outside(car)
+            # Let the cars on the roundabout drive first.
+            for car in self.cars_on_round:
+                self.drive_roundabout(car)
 
-        self.cars = list(filter(lambda c: c.active, self.cars))
-        self.true_density = len(self.cars) / self.road_size
+            for car in self.cars_not_round:
+                self.drive_outside(car)
 
-        if DEBUG:
-            print("CARS ON THE ROAD: {}".format(len(self.cars)))
-            print("DENSITY: {}".format(self.true_density))
-            print("CARS FINISHED: {}".format(self.n_finished))
+            self.cars = list(filter(lambda c: c.active, self.cars))
+            self.true_density = len(self.cars) / self.road_size
+
+            if DEBUG:
+                print("CARS ON THE ROAD: {}".format(len(self.cars)))
+                print("DENSITY: {}".format(self.true_density))
+                print("CARS FINISHED: {}".format(self.n_finished))
 
     def drive_roundabout(self, car):
         r, c = car.cur_pos
@@ -283,8 +282,8 @@ class RoundaboutSim():
                     car.drive()
                     car.turn_left()
             else:
-                car.drive()
-
+                if self.priority(car, car.orientation):
+                    car.drive()
         elif state == 10:
             if car.switch_ctr == 0 and self.priority(car, car.look_left()):
                     car.switch_ctr += 1
@@ -292,7 +291,8 @@ class RoundaboutSim():
                     car.drive()
                     car.turn_right()
             else:
-                car.drive()
+                if self.priority(car, car.orientation):
+                    car.drive()
 
     def drive_outside(self, car):
         r, c = car.cur_pos
@@ -484,7 +484,8 @@ class RoundaboutSim():
                     self.cars_not_round.append(car)
         else:
             cur_pos = [car.cur_pos for car in self.cars]
-            print(cur_pos)
+            pos, count = np.unique(cur_pos, axis=0, return_counts=True)
+            print(pos[count > 1])
             sys.exit('Cars overlap')
 
         # Let the cars on the roundabout drive first.
@@ -511,9 +512,9 @@ class RoundaboutSim():
             state = self.exception_handling(car)
 
         if state == 1:
-            self.free_starts = np.append(
-                self.free_starts, [car.cur_pos], axis=0)
             if self.priority(car, car.orientation):
+                self.free_starts = np.append(
+                    self.free_starts, [car.cur_pos], axis=0)
                 car.drive()
         elif state == 2:
             car.toggle_active()
@@ -568,7 +569,8 @@ class RoundaboutSim():
                     car.drive()
                     car.turn_left()
             else:
-                car.drive()
+                if self.priority(car, car.orientation):
+                    car.drive()
         elif state == 10:
             if car.switch_ctr == 0 and self.priority(car, car.look_left()):
                     car.switch_ctr += 1
@@ -576,18 +578,5 @@ class RoundaboutSim():
                     car.drive()
                     car.turn_right()
             else:
-                car.drive()
-        # elif state == 9:
-        #     car.turn_right()
-        #     if self.priority(car, car.orientation):
-        #         car.drive()
-        #         car.turn_left()
-        #     else:
-        #         car.turn_left()
-        # elif state == 10:
-        #     car.turn_left()
-        #     if self.priority(car, car.orientation):
-        #         car.drive()
-        #         car.turn_right()
-        #     else:
-        #         car.turn_right()
+                if self.priority(car, car.orientation):
+                    car.drive()
