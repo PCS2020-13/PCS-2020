@@ -66,6 +66,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    assert args.density > 0.0 and args.density < 1.0, 'Density should be in range (0, 1)'
+
     if args.roundabout.lower() == 'regular':
         roundabout = Regular()
     elif args.roundabout.lower() == 'turbo':
@@ -109,4 +111,4 @@ if __name__ == '__main__':
                                             args.roundabout,
                                             args.density,
                                             args.iterations)
-        df.to_csv(filename)
+        df.to_csv(filename, index_label="i")
