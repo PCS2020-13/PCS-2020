@@ -1,5 +1,5 @@
 import numpy as np
-from numpy.random import binomial
+from numpy.random import RandomState
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -11,10 +11,6 @@ from car import Car
 
 CAR_VALUE = -1
 
-# Define car color
-cmap = cm.Dark2
-cmap.set_bad(color='red')
-
 ####
 # TODO:
 #       - Reckless driving
@@ -25,7 +21,6 @@ cmap.set_bad(color='red')
 #       - Different car velocities
 #       -
 ####
-
 
 class RoundaboutSim():
     def __init__(self, model, density=0.05, steps=1000, show_animation=True):
@@ -52,7 +47,6 @@ class RoundaboutSim():
 
     def __str__(self):
         return str(self.model)
-        # return '\n'.join([np.array2string(row)[1:-1] for row in self.model.grid])
 
     def set_steps(self, steps):
         self.steps = steps
@@ -102,7 +96,7 @@ class RoundaboutSim():
         """Draws the model of the roundabout.
 
         Keyword Arguments:
-            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits 
+            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits
             until the figure is closed. Otherwise it waits until a blocking show() somewhere else in the program is called.
             (default: {True})
         """
@@ -135,7 +129,7 @@ class RoundaboutSim():
         self.true_density = 0
         self.free_starts = np.copy(self.start_states)
 
-    def run(self):
+    def run(self, beautiful=True):
         """Initializes the simulation."""
         self.spawn_cars()
         grid = self.get_grid()
@@ -149,10 +143,18 @@ class RoundaboutSim():
             frame.axes.get_xaxis().set_visible(False)
             frame.axes.get_yaxis().set_visible(False)
 
-            cmap = cm.Dark2
-            cmap.set_bad(color='red')
-            sim_grid = plt.imshow(grid, cmap=cmap)
+            cmap = cm.get_cmap('Dark2')
 
+            if beautiful:
+                norm = cm.colors.Normalize(vmin=0.1, vmax=0.9)
+            else:
+                norm = cm.colors.Normalize(vmin=0.1)
+
+            cmap.set_bad(color='red')
+            cmap.set_under(color='green')
+            cmap.set_over(color='grey')
+
+            sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,),
                                            interval=500,  # MAKE VARIABLE
@@ -165,7 +167,8 @@ class RoundaboutSim():
         else:
             for i in range(self.steps):
                 self.step(i, grid)
-        
+
+        '''
         print("== FINAL STATISTICS ==")
         print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
         print("TOTAL STEPS  : {}".format(self.steps))
@@ -173,6 +176,7 @@ class RoundaboutSim():
         print("CARS FINISHED: {}".format(self.n_finished))
         print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
         print("======================")
+        '''
 
     def step(self, i, grid):
         if DEBUG:
@@ -257,7 +261,7 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            turn = np.random.binomial(1, p=prob)
+            turn = RandomState().binomial(1, p=prob)
             if turn == 1:
                 if self.priority(car, car.look_right()):
                     car.turn_right()

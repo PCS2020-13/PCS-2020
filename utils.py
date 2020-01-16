@@ -1,6 +1,6 @@
 ## Utilities for running the simulations
 
-from numpy.random import choice
+from numpy.random import RandomState
 import pandas as pd
 
 DEBUG = False
@@ -22,7 +22,7 @@ def random_row(M, num_rows=1):
     Returns:
         np.array -- A 2D numpy array containing the selected rows.
     """
-    return M[choice(M.shape[0], num_rows, replace=False)]
+    return M[RandomState().choice(M.shape[0], num_rows, replace=False)]
 
 
 #https://stackoverflow.com/questions/29129095/save-additional-attributes-in-pandas-dataframe
