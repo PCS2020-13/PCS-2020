@@ -9,12 +9,13 @@ from utils import (NORTH, EAST, SOUTH, WEST)
 
 
 class Car:
-    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0):
+    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0, switch_ctr=0):
         self.orientation = orientation
         self.cur_pos = start_pos
         self.active = active
         self.p_turn = p_turn
         self.turn_ctr = turn_ctr
+        self.switch_ctr = switch_ctr
         self.turns = 0
 
     def __repr__(self):
