@@ -273,19 +273,22 @@ class RoundaboutSim():
                 car.turn_right()
                 car.drive()
         elif state == 9:
-            car.turn_right()
-            if self.priority(car, car.orientation):
-                car.drive()
-                car.turn_left()
+            if car.switch_ctr == 0 and self.priority(car, car.look_right()):
+                    car.switch_ctr += 1
+                    car.turn_right()
+                    car.drive()
+                    car.turn_left()
             else:
-                car.turn_left()
+                car.drive()
+
         elif state == 10:
-            car.turn_left()
-            if self.priority(car, car.orientation):
-                car.drive()
-                car.turn_right()
+            if car.switch_ctr == 0 and self.priority(car, car.look_left()):
+                    car.switch_ctr += 1
+                    car.turn_left()
+                    car.drive()
+                    car.turn_right()
             else:
-                car.turn_right()
+                car.drive()
 
     def drive_outside(self, car):
         r, c = car.cur_pos
