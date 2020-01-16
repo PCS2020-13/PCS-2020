@@ -322,22 +322,43 @@ class RoundaboutSim():
                 car.drive()
         elif state == 9:
             if car.switch_ctr == 0 and self.priority(car, car.look_right()):
-                    car.switch_ctr += 1
+                if RandomState().binomial(1, p=1/2) == 1:
                     car.turn_right()
                     car.drive()
                     car.turn_left()
-            else:
-                if self.priority(car, car.orientation):
+                    if self.priority(car, car.orientation):
+                        car.drive()
+                        car.switch_ctr = 1
+                    else:
+                        car.turn_left()
+                        car.drive()
+                        car.turn_right()
+                        if self.priority(car, car.orientation):
+                            car.drive()
+                elif self.priority(car, car.orientation):
                     car.drive()
+            elif self.priority(car, car.orientation):
+                car.drive()
+
         elif state == 10:
             if car.switch_ctr == 0 and self.priority(car, car.look_left()):
-                    car.switch_ctr += 1
+                if RandomState().binomial(1, p=1/2) == 1:
                     car.turn_left()
                     car.drive()
                     car.turn_right()
-            else:
-                if self.priority(car, car.orientation):
+                    if self.priority(car, car.orientation):
+                        car.drive()
+                        car.switch_ctr = 1
+                    else:
+                        car.turn_right()
+                        car.drive()
+                        car.turn_left()
+                        if self.priority(car, car.orientation):
+                            car.drive()
+                elif self.priority(car, car.orientation):
                     car.drive()
+            elif self.priority(car, car.orientation):
+                car.drive()
 
     def drive_outside(self, car):
         """Let a car drive outside of the roundabout.
@@ -603,7 +624,7 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            turn = np.random.binomial(1, p=prob)
+            turn = np.random.binomial(1, p=1/2)
             if turn == 1:
                 if self.priority(car, car.look_left()):
                     car.turn_left()
@@ -621,7 +642,7 @@ class RoundaboutSim():
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            turn = np.random.binomial(1, p=prob)
+            turn = np.random.binomial(1, p=1/2)
             if turn == 1:
                 if self.priority(car, car.look_right()):
                     car.turn_right()
@@ -637,19 +658,40 @@ class RoundaboutSim():
                 car.drive()
         elif state == 9:
             if car.switch_ctr == 0 and self.priority(car, car.look_right()):
-                    car.switch_ctr += 1
+                if RandomState().binomial(1, p=1/2) == 1:
                     car.turn_right()
                     car.drive()
                     car.turn_left()
-            else:
-                if self.priority(car, car.orientation):
+                    if self.priority(car, car.orientation):
+                        car.drive()
+                        car.switch_ctr = 1
+                    else:
+                        car.turn_left()
+                        car.drive()
+                        car.turn_right()
+                        if self.priority(car, car.orientation):
+                            car.drive()
+                elif self.priority(car, car.orientation):
                     car.drive()
+            elif self.priority(car, car.orientation):
+                car.drive()
+
         elif state == 10:
             if car.switch_ctr == 0 and self.priority(car, car.look_left()):
-                    car.switch_ctr += 1
+                if RandomState().binomial(1, p=1/2) == 1:
                     car.turn_left()
                     car.drive()
                     car.turn_right()
-            else:
-                if self.priority(car, car.orientation):
+                    if self.priority(car, car.orientation):
+                        car.drive()
+                        car.switch_ctr = 1
+                    else:
+                        car.turn_right()
+                        car.drive()
+                        car.turn_left()
+                        if self.priority(car, car.orientation):
+                            car.drive()
+                elif self.priority(car, car.orientation):
                     car.drive()
+            elif self.priority(car, car.orientation):
+                car.drive()
