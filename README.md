@@ -90,5 +90,6 @@ Runs 15 simulations on a turbo roundabout, each with a car density of 0.2 and 20
 
 To run a series of experiments, run
 ```
-$ ./run_tests.sh
+$ ./run_tests.sh STEPS SIMULATIONS
 ```
+Here, `STEPS` is the number of time steps per simulation and `SIMULATIONS` is the number of simulations per density.
