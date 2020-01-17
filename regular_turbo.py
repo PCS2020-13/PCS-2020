@@ -119,7 +119,9 @@ def drive_roundabout(self, car, wait_ctr=2):
             car.drive()
     elif state == 5:
         if self.priority(car, car.orientation):
-            car.drive()
+            stand = RandomState().binomial(1, p=car.asshole_factor)
+            if not stand:
+                car.drive()
     elif state == 6:
         car.turn_ctr += 1
         prob = car.turn_ctr * (1/4)
@@ -140,8 +142,6 @@ def drive_roundabout(self, car, wait_ctr=2):
                 car.turn_ctr = 3
         else:
             if self.priority(car, car.orientation):
-                # stand = RandomState().binomial(1, p=car.asshole_factor)
-                # if not stand:
                 car.drive()
     elif state == 7:
         if self.priority(car, car.look_right()):

@@ -140,10 +140,10 @@ class RoundaboutSim():
             start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
-            # if RandomState().binomial(1, p=0.01):
-            #     car = Car(orientation, start_pos, end_pos, asshole_factor=0.5)
-            # else:
-            car = Car(orientation, start_pos, end_pos)
+            if RandomState().binomial(1, p=0.05):
+                car = Car(orientation, start_pos, end_pos, asshole_factor=0.2)
+            else:
+                car = Car(orientation, start_pos, end_pos)
             self.cars.append(car)
             self.true_density = len(self.cars) / self.road_size
 
@@ -193,7 +193,7 @@ class RoundaboutSim():
             # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,sim_title),
-                                           interval=25,
+                                           interval=10,
                                            frames=self.steps,
                                            repeat=False
                                            )

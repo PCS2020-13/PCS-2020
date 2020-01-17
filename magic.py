@@ -7,6 +7,7 @@
 import numpy as np
 from utils import (DEBUG, random_row, NORTH, EAST, SOUTH, WEST)
 from numpy.random import RandomState
+import sys
 
 def exceptions_magic(self, car):
     """Handles special cases for turning cars.
