@@ -160,6 +160,7 @@ def drive_magic(self, car, wait_ctr=3):
         # Checks if car stands still for more than 3 turns
         if car.prev_pos[1] >= wait_ctr:
             prob = 1-prob
+            self.waiting_cars += 1
 
         turn = np.random.binomial(1, p=1/2)
         if turn == 1:
@@ -184,6 +185,7 @@ def drive_magic(self, car, wait_ctr=3):
         if car.prev_pos[1] == wait_ctr:
             prob = 1-prob
             car.prev_pos[1] = 0
+            self.waiting_cars += 1
 
         turn = np.random.binomial(1, p=1/2)
         if turn == 1:

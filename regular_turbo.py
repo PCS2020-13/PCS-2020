@@ -130,6 +130,7 @@ def drive_roundabout(self, car, wait_ctr=2):
         if car.prev_pos[1] == wait_ctr:
             prob = 1-prob
             car.prev_pos[1] = 0
+            self.waiting_cars += 1
 
         turn = RandomState().binomial(1, p=prob)
         if turn == 1:
