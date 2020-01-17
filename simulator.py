@@ -29,13 +29,14 @@ CAR_VALUE = -1
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.05, steps=1000, show_animation=True):
+    def __init__(self, model, density=0.05, steps=1000, show_animation=True, asshole_probability=0):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
         self.true_density = 0
         self.steps = steps
         self.exceptions = model.exceptions
+        self.asshole_probability = asshole_probability
 
         self.road_size = (self.model.grid != 0).sum()
         self.n_finished = 0
@@ -140,8 +141,9 @@ class RoundaboutSim():
             start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
-            if RandomState().binomial(1, p=0.05):
-                car = Car(orientation, start_pos, end_pos, asshole_factor=0.2)
+            # Define 'assholes' with a certain asshole factor that stop randomly in traffic.
+            if RandomState().binomial(1, p=self.asshole_probability):
+                car = Car(orientation, start_pos, end_pos, asshole_factor=0.05)
             else:
                 car = Car(orientation, start_pos, end_pos)
             self.cars.append(car)

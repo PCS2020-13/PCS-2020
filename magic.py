@@ -134,127 +134,132 @@ def drive_magic(self, car, wait_ctr=3):
     r, c = car.cur_pos
     state = self.model.grid[r][c]
 
-    # state 8 defines the exceptions
-    if state == 8:
-        state = exceptions_magic(self, car)
+    # Depending on the asshole factor, stand still for 3 time steps.
+    stand = RandomState().binomial(1, p=car.asshole_factor)
+    if stand or (car.asshole_ctr > 0 and car.asshole_ctr < 4):
+        car.asshole_ctr += 1
+    else:
+        # state 8 defines the exceptions
+        if state == 8:
+            state = exceptions_magic(self, car)
 
-    if state == 1:
-        if self.priority(car, car.orientation):
-            self.free_starts = np.append(
-                self.free_starts, [car.cur_pos], axis=0)
-            car.drive()
-    elif state == 2:
-        car.toggle_active()
-        self.n_finished += 1
-        self.turns_per_car.append(car.turns)
-        return
-    elif state == 3:
-        if self.priority(car, car.look_left()):
-            car.turn_left()
-            car.drive()
-    elif state == 4:
-        car.turn_ctr += 1
-        prob = car.turn_ctr * (1/4)
-        if prob > 1:
-            prob = 1
-        
-        # Checks if car stands still for more than 3 turns
-        if car.prev_pos[1] >= wait_ctr:
-            prob = 1-prob
-
-        turn = np.random.binomial(1, p=1/2)
-        if turn == 1:
+        if state == 1:
+            if self.priority(car, car.orientation):
+                self.free_starts = np.append(
+                    self.free_starts, [car.cur_pos], axis=0)
+                car.drive()
+        elif state == 2:
+            car.toggle_active()
+            self.n_finished += 1
+            self.turns_per_car.append(car.turns)
+            return
+        elif state == 3:
             if self.priority(car, car.look_left()):
                 car.turn_left()
                 car.drive()
+        elif state == 4:
+            car.turn_ctr += 1
+            prob = car.turn_ctr * (1/4)
+            if prob > 1:
+                prob = 1
+            
+            # Checks if car stands still for more than 3 turns
+            if car.prev_pos[1] >= wait_ctr:
+                prob = 1-prob
+
+            turn = np.random.binomial(1, p=1/2)
+            if turn == 1:
+                if self.priority(car, car.look_left()):
+                    car.turn_left()
+                    car.drive()
+                else:
+                    car.turn_ctr = 3
             else:
-                car.turn_ctr = 3
-        else:
+                if self.priority(car, car.orientation):
+                    car.drive()
+        elif state == 5:
             if self.priority(car, car.orientation):
                 car.drive()
-    elif state == 5:
-        if self.priority(car, car.orientation):
-            car.drive()
-    elif state == 6:
-        car.turn_ctr += 1
-        prob = car.turn_ctr * (1/4)
-        if prob > 1:
-            prob = 1
-        
-        # Checks if car stands still for more than 3 turns
-        if car.prev_pos[1] == wait_ctr:
-            prob = 1-prob
-            car.prev_pos[1] = 0
+        elif state == 6:
+            car.turn_ctr += 1
+            prob = car.turn_ctr * (1/4)
+            if prob > 1:
+                prob = 1
+            
+            # Checks if car stands still for more than 3 turns
+            if car.prev_pos[1] == wait_ctr:
+                prob = 1-prob
+                car.prev_pos[1] = 0
 
-        turn = np.random.binomial(1, p=1/2)
-        if turn == 1:
+            turn = np.random.binomial(1, p=1/2)
+            if turn == 1:
+                if self.priority(car, car.look_right()):
+                    car.turn_right()
+                    car.drive()
+                else:
+                    car.turn_ctr = 3
+            else:
+                if self.priority(car, car.orientation):
+                    car.drive()
+        elif state == 7:
             if self.priority(car, car.look_right()):
                 car.turn_right()
                 car.drive()
-            else:
-                car.turn_ctr = 3
-        else:
-            if self.priority(car, car.orientation):
-                car.drive()
-    elif state == 7:
-        if self.priority(car, car.look_right()):
-            car.turn_right()
-            car.drive()
-    elif state == 9:
-        if self.priority(car, car.look_right()):
-            if car.switch_ctr == 0 or car.prev_pos[1] >= wait_ctr:
-                if car.prev_pos[1] >= wait_ctr:
-                    p = 1
-                else:
-                    p = 1/5
-                if RandomState().binomial(1, p=p) == 1:
-                    car.turn_right()
-                    car.drive()
-                    car.turn_left()
-                    if self.priority(car, car.orientation):
-                        car.drive()
-                        car.switch_ctr = 1
+        elif state == 9:
+            if self.priority(car, car.look_right()):
+                if car.switch_ctr == 0 or car.prev_pos[1] >= wait_ctr:
+                    if car.prev_pos[1] >= wait_ctr:
+                        p = 1
                     else:
-                        car.turn_left()
-                        car.drive()
-                        car.turn_right()
-                        if self.priority(car, car.orientation):
-                            car.drive()
-                elif self.priority(car, car.orientation):
-                    car.drive()
-            elif self.priority(car, car.orientation):
-                car.drive()
-        elif self.priority(car, car.orientation):
-            car.drive()
-
-    elif state == 10:
-        if self.priority(car, car.look_left()):
-            if car.switch_ctr == 0 or car.prev_pos[1] >= wait_ctr:
-                if car.prev_pos[1] >= wait_ctr:
-                    p = 1
-                else:
-                    p = 1/5
-                if RandomState().binomial(1, p=p) == 1:
-                    car.turn_left()
-                    car.drive()
-                    car.turn_right()
-                    if self.priority(car, car.orientation):
-                        car.drive()
-                        car.switch_ctr = 1
-                    else:
+                        p = 1/5
+                    if RandomState().binomial(1, p=p) == 1:
                         car.turn_right()
                         car.drive()
                         car.turn_left()
                         if self.priority(car, car.orientation):
                             car.drive()
+                            car.switch_ctr = 1
+                        else:
+                            car.turn_left()
+                            car.drive()
+                            car.turn_right()
+                            if self.priority(car, car.orientation):
+                                car.drive()
+                    elif self.priority(car, car.orientation):
+                        car.drive()
                 elif self.priority(car, car.orientation):
                     car.drive()
             elif self.priority(car, car.orientation):
                 car.drive()
-        elif self.priority(car, car.orientation):
-            car.drive()
-    
-    if np.array_equal(car.cur_pos, car.prev_pos[0]):
-        car.prev_pos[1] += 1
 
-    car.prev_pos[0] = car.cur_pos
+        elif state == 10:
+            if self.priority(car, car.look_left()):
+                if car.switch_ctr == 0 or car.prev_pos[1] >= wait_ctr:
+                    if car.prev_pos[1] >= wait_ctr:
+                        p = 1
+                    else:
+                        p = 1/5
+                    if RandomState().binomial(1, p=p) == 1:
+                        car.turn_left()
+                        car.drive()
+                        car.turn_right()
+                        if self.priority(car, car.orientation):
+                            car.drive()
+                            car.switch_ctr = 1
+                        else:
+                            car.turn_right()
+                            car.drive()
+                            car.turn_left()
+                            if self.priority(car, car.orientation):
+                                car.drive()
+                    elif self.priority(car, car.orientation):
+                        car.drive()
+                elif self.priority(car, car.orientation):
+                    car.drive()
+            elif self.priority(car, car.orientation):
+                car.drive()
+        
+        if np.array_equal(car.cur_pos, car.prev_pos[0]):
+            car.prev_pos[1] += 1
+
+        car.prev_pos[0] = car.cur_pos

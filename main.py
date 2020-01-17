@@ -63,6 +63,7 @@ if __name__ == '__main__':
                         help='print the results to stdout')
     parser.add_argument('-m', '--multithreading', action='store_true',
                         help='use multithreading to speed up the simulation process')
+    parser.add_argument('-A', '--asshole_probability', default=0, type=float, help='asshole factor for a car')
 
     args = parser.parse_args()
 
@@ -108,5 +109,6 @@ if __name__ == '__main__':
         filename = '{}/{}_{}_{}.csv'.format(args.output,
                                             args.roundabout,
                                             args.density,
-                                            args.iterations)
+                                            args.iterations,
+                                            args.asshole_probability)
         df.to_csv(filename)
