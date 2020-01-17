@@ -34,6 +34,7 @@ class RoundaboutSim():
         self.model = model
         self.aimed_density = density
         self.true_density = 0
+        self.waiting_cars = 0
         self.steps = steps
         self.exceptions = model.exceptions
         self.asshole_probability = asshole_probability
@@ -208,11 +209,12 @@ class RoundaboutSim():
 
         if DEBUG:
             print("== FINAL STATISTICS ==")
-            print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
-            print("TOTAL STEPS  : {}".format(self.steps))
             print("CARS IN TOTAL: {}".format(len(self.cars)+self.n_finished))
             print("CARS FINISHED: {}".format(self.n_finished))
-            print("THROUGHPUT   : {} %".format(round((self.n_finished/(len(self.cars)+self.n_finished)*100), 3)))
+            print("CARS FINISHED PER STEP: {}".format(self.n_finished/self.steps))
+            print("WAITING CARS: {}".format(self.waiting_cars))
+            print("AVERAGE WAITING PER CARS: {}".format(round(self.waiting_cars/(len(self.cars)+self.n_finished), 3)))
+            print("AVERAGE WAITING PER STEP: {}".format(round(self.waiting_cars/self.steps, 3)))
             print("======================")
 
     def step(self, i, grid, title=None):
@@ -232,7 +234,7 @@ class RoundaboutSim():
         self.spawn_cars()
 
         if self.show_animation:
-            title.set_text("step = {}\ndensity = {:.3f}".format(i + 1, self.true_density))
+            title.set_text("step = {}\ndensity = {}".format(i + 1, round(self.true_density, 3)))
             grid.set_data(self.get_grid())
 
         return grid,

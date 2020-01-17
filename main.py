@@ -76,7 +76,7 @@ if __name__ == '__main__':
     else:
         raise TypeError('Roundabout does not exist.')
 
-    columns = ['n_total', 'n_finished', 'turns_avg', 'turns_std']
+    columns = ['n_total', 'n_finished', 'turns_avg', 'turns_std', 'n_waiting']
     df = pd.DataFrame(columns=columns)
 
     if args.multithreading:
@@ -98,7 +98,8 @@ if __name__ == '__main__':
             n_total = n_finished + len(r.cars)
             turns_avg = np.mean(r.turns_per_car)
             turns_std = np.std(r.turns_per_car)
-            data = [float(n_total), float(n_finished), turns_avg, turns_std]
+            n_waiting = r.waiting_cars
+            data = [float(n_total), float(n_finished), turns_avg, turns_std, n_waiting]
             df_temp = pd.DataFrame(dict(zip(columns, data)), index=[0])
             df = df.append(df_temp, ignore_index=True, sort=False)
 
