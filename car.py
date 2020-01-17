@@ -6,10 +6,10 @@
 ###
 
 from utils import (NORTH, EAST, SOUTH, WEST)
-
+from numpy.random import RandomState
 
 class Car:
-    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0, switch_ctr=0):
+    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0, switch_ctr=0, asshole_factor=0, asshole_ctr=0):
         self.orientation = orientation
         self.cur_pos = start_pos
         self.prev_pos = [start_pos, 0]
@@ -18,6 +18,8 @@ class Car:
         self.turn_ctr = turn_ctr
         self.switch_ctr = switch_ctr
         self.turns = 0
+        self.asshole_factor = asshole_factor
+        self.asshole_ctr = asshole_ctr
 
     def __repr__(self):
         return '(cur_pos: {}, orientation: {})'.format(self.cur_pos, self.orientation)
@@ -35,7 +37,6 @@ class Car:
         Returns:
             {[int, int]} -- A numpy-array containing the x and y coordinates of the updated current position.
         """
-
         if self.orientation == NORTH:
             self.cur_pos[0] -= 1
         elif self.orientation == EAST:

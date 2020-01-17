@@ -29,7 +29,7 @@ CAR_VALUE = -1
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.05, steps=1000, show_animation=True):
+    def __init__(self, model, density=0.05, steps=1000, show_animation=True, asshole_probability=0):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
@@ -37,6 +37,7 @@ class RoundaboutSim():
         self.waiting_cars = 0
         self.steps = steps
         self.exceptions = model.exceptions
+        self.asshole_probability = asshole_probability
 
         self.road_size = (self.model.grid != 0).sum()
         self.n_finished = 0
@@ -141,7 +142,11 @@ class RoundaboutSim():
             start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
-            car = Car(orientation, start_pos, end_pos)
+            # Define 'assholes' with a certain asshole factor that stop randomly in traffic.
+            if RandomState().binomial(1, p=self.asshole_probability):
+                car = Car(orientation, start_pos, end_pos, asshole_factor=0.05)
+            else:
+                car = Car(orientation, start_pos, end_pos)
             self.cars.append(car)
             self.true_density = len(self.cars) / self.road_size
 
@@ -191,7 +196,7 @@ class RoundaboutSim():
             # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
                                            fargs=(sim_grid,sim_title),
-                                           interval=25,
+                                           interval=10,
                                            frames=self.steps,
                                            repeat=False
                                            )
@@ -254,7 +259,7 @@ class RoundaboutSim():
             process_cars_magic(self)
         else:
             process_cars_reg(self)
-        
+
         # Delete cars that are finished from the self.cars list.
         self.cars = list(filter(lambda c: c.active, self.cars))
         self.true_density = len(self.cars) / self.road_size
@@ -299,4 +304,3 @@ class RoundaboutSim():
         if len(np.unique(cur_pos, axis=0)) == len(cur_pos):
             return False
         return True
-
