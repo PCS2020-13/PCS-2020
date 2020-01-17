@@ -20,11 +20,8 @@ if __name__ == '__main__':
         for d in range(1, 10):
             filename = "output/{}_{}_{}.csv".format(r, d/10, STEPS)
             data = np.loadtxt(filename, skiprows=1, usecols=range(1,5), delimiter=',')
-            print(filename)
-            print(data[:,1])
             n_finished = data[:,1]
-            throughput = n_finished / STEPS
-            print(throughput)
+            throughput = (n_finished) / STEPS
             avg_throughput.append(np.mean(throughput))
             std_throughput.append(np.std(throughput))
 
