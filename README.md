@@ -11,11 +11,11 @@ We recommend running the simulations through a *virtual environment* ([venv](htt
 
 For Linux/macOS:
 ```bash
-python3 -m pip install --user virtualenv
+$ python3 -m pip install --user virtualenv
 ```
 For Windows:
 ```bash
-py -m pip install --user virtualenv
+$ py -m pip install --user virtualenv
 ```
 
 ### Creating and activating the virtual environment
@@ -23,9 +23,9 @@ py -m pip install --user virtualenv
 Creating a new virtual environment can be done by running the following commands:
 
 ```bash
-virtualenv venv/ -p /usr/bin/python3
-source venv/bin/activate
-pip install -r requirements.txt
+$ virtualenv venv/ -p /usr/bin/python3
+$ source venv/bin/activate
+$ pip install -r requirements.txt
 ```
 
 The first line creates a new environment. You only have to run this command once.
@@ -34,7 +34,7 @@ The third line installs all project dependencies in the virtual environment. It 
 
 To exit the environment, simply type
 ```
-deactivate
+$ deactivate
 ```
 Remember to reactivate the environment when you return to the project.
 
@@ -77,14 +77,18 @@ optional arguments:
 
 ### Examples
 ```
-./main.py magic -d 0.8 -i 500 -s 1 -p -a
+$ ./main.py magic -d 0.8 -i 500 -s 1 -p -a
 ```
 Runs one simulation on a magic roundabout with a car density of 0.8 and 500 time steps. Animates the simulation and prints the results to stdout.
 
 ```
-./main.py turbo -d 0.2 -i 2000 -s 15 -o output -m
+$ ./main.py turbo -d 0.2 -i 2000 -s 15 -o output -m
 ```
 Runs 15 simulations on a turbo roundabout, each with a car density of 0.2 and 2000 time steps. Write the results to a file in a directory called `output` (make sure this directory already exists). Use multithreading to speed up to execute multiple simulations in parallel.
 
+### Running the experiments
 
-<span style="color:red">**TODO:**</span> Create a script for running simulations with varying parameters.
+To run a series of experiments, run
+```
+$ ./run_tests.sh
+```
