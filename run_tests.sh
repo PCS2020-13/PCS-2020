@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-STEPS=250
-SIMULATIONS=5
-OUTPUT="output"
+# Makes sure decimal numbers have a dot instead of a comma
+LC_NUMERIC=C
+STEPS=$1
+SIMULATIONS=$2
+OUTPUT="./output"
 ROUNDABOUTS=('regular' 'turbo' 'magic')
 
 GREEN="\033[0;32m"
@@ -14,9 +16,24 @@ run_roundabout() {
     echo -e "\t${GREEN}DONE${NC}"
 }
 
-for r in "${ROUNDABOUTS[@]}"; do
-    echo "========= $r =========="
-    for d in $(seq 0.1 0.1 0.9); do
-        run_roundabout $r $d
+main() {
+    if [ ! -d "$OUTPUT" ]; then
+    echo "creating output directory..."
+    mkdir "$OUTPUT"
+    fi
+
+    echo "running roundaboutsim with $STEPS time steps and $SIMULATIONS simulations per density..."
+
+    for r in "${ROUNDABOUTS[@]}"; do
+        echo "========= $r =========="
+        for d in $(seq 0.05 0.05 0.95); do
+            run_roundabout $r $d
+        done
     done
-done
+}
+
+if [ "$#" -ne 2 ]; then
+    echo "Illegal number of parameters. Please specify the number of time steps and the number of simulations."
+else
+    main
+fi
