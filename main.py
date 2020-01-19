@@ -37,7 +37,8 @@ def run_sim(roundabout, density, steps):
     n_total = n_finished + len(r.cars)
     turns_avg = np.mean(r.turns_per_car)
     turns_std = np.std(r.turns_per_car)
-    data = (n_total, n_finished, turns_avg, turns_std)
+    n_waiting = r.waiting_cars
+    data = (n_total, n_finished, turns_avg, turns_std, n_waiting)
     return data
 
 
