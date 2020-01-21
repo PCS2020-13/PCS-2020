@@ -18,8 +18,8 @@ run_roundabout() {
 
 main() {
     if [ ! -d "$OUTPUT" ]; then
-    echo "creating output directory..."
-    mkdir "$OUTPUT"
+        echo "creating output directory..."
+        mkdir "$OUTPUT"
     fi
 
     echo "running roundaboutsim with $STEPS time steps and $SIMULATIONS simulations per density..."

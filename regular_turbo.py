@@ -75,7 +75,7 @@ def process_cars_reg(self):
     """Process the cars.
     The next step of a car depends on the state of the current cell it is on.
     """
-    
+
     self.cars_on_round = []
     self.cars_not_round = []
 
