@@ -114,4 +114,4 @@ if __name__ == '__main__':
                                             args.density,
                                             args.iterations,
                                             args.asshole_probability)
-        df.to_csv(filename, index_label="i")
+        df.to_csv(filename, index_label="i", mode='a')

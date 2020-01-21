@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-STEPS=250
+LC_NUMERIC=C
+STEPS=1000
 SIMULATIONS=5
 OUTPUT="output"
 ROUNDABOUTS=('regular' 'turbo' 'magic')

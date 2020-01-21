@@ -138,9 +138,15 @@ def drive_roundabout(self, car, wait_ctr=2):
                 self.waiting_cars += 1
 
             turn = RandomState().binomial(1, p=prob)
+            print(turn)
             if turn == 1:
                 if self.priority(car, car.look_right()):
                     car.turn_right()
+                    car.drive()
+                else:
+                    car.turn_ctr = 3
+            else:
+                if self.priority(car, car.orientation):
                     car.drive()
         elif state == 7:
             if self.priority(car, car.look_right()):

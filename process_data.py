@@ -8,7 +8,7 @@ import os
 
 ROUNDABOUTS = ['regular', 'turbo', 'magic']
 STEPS = 250 #TEMPORARY
-ASSHOLE_PROB = 0.05 #TEMPORARY
+ASSHOLE_PROB = 0 #TEMPORARY
 
 if __name__ == '__main__':
     x = np.arange(1, 10) / 10
