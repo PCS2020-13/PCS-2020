@@ -11,7 +11,7 @@ GREEN="\033[0;32m"
 NC="\033[0m"
 
 run_roundabout() {
-    echo "density = $2..."
+    echo -n "density = $2..."
     $(./main.py $1 -d $2 -i $STEPS -s $SIMULATIONS -o output -m)
     echo -e "\t${GREEN}DONE${NC}"
 }
