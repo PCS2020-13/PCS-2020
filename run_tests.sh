@@ -11,15 +11,15 @@ GREEN="\033[0;32m"
 NC="\033[0m"
 
 run_roundabout() {
-    echo -n "density = $2..."
+    echo "density = $2..."
     $(./main.py $1 -d $2 -i $STEPS -s $SIMULATIONS -o output -m)
     echo -e "\t${GREEN}DONE${NC}"
 }
 
 main() {
     if [ ! -d "$OUTPUT" ]; then
-    echo "creating output directory..."
-    mkdir "$OUTPUT"
+        echo "creating output directory..."
+        mkdir "$OUTPUT"
     fi
 
     echo "running roundaboutsim with $STEPS time steps and $SIMULATIONS simulations per density..."

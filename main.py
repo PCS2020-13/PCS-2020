@@ -111,8 +111,8 @@ if __name__ == '__main__':
 
     if args.output:
         filename = '{}/{}_{}_{}_{}.csv'.format(args.output,
-                                            args.roundabout,
-                                            args.density,
-                                            args.iterations,
-                                            args.asshole_probability)
-        df.to_csv(filename, index_label="i", mode='a')
+                                               args.roundabout,
+                                               args.density,
+                                               args.iterations,
+                                               args.asshole_probability)
+        df.to_csv(filename, index_label="i")

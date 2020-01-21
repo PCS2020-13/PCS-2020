@@ -75,7 +75,7 @@ def process_cars_reg(self):
     """Process the cars.
     The next step of a car depends on the state of the current cell it is on.
     """
-    
+
     self.cars_on_round = []
     self.cars_not_round = []
 
@@ -138,7 +138,6 @@ def drive_roundabout(self, car, wait_ctr=2):
                 self.waiting_cars += 1
 
             turn = RandomState().binomial(1, p=prob)
-            print(turn)
             if turn == 1:
                 if self.priority(car, car.look_right()):
                     car.turn_right()
