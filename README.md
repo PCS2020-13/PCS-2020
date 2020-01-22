@@ -1,4 +1,4 @@
-# Project Computational Science 2020
+# Project Computational Science 2020 :blue_car:
 
 This repository contains all files necessary for running the simulations used by project group 13 in the Project Computational Science course at the University of Amsterdam.
 
