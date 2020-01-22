@@ -9,8 +9,7 @@ import os
 ROUNDABOUTS = ['regular', 'turbo', 'magic']
 DENSITY = np.arange(0.5, 10, 0.5)/10
 STEPS = 1000
-ASSHOLE_PROB = [0, 0.05, 0.1]
-COLORS = ['orange', 'blue', 'green']
+ASSHOLE_PROB = [0, 0.05, 0.1, 0.25]
 
 def read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB):
     r_data = []
@@ -26,7 +25,7 @@ def read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB):
         r_data.append(a_data)
     return r_data
 
-def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB, error=True):
+def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB, error=False):
     for i,r in enumerate(ROUNDABOUTS):
         fig = plt.figure()
         for j,a in enumerate(ASSHOLE_PROB):
@@ -38,9 +37,9 @@ def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB, error=True):
                 std_throughput.append(np.std(throughput))
 
             if error:
-                plt.errorbar(DENSITY, avg_throughput, yerr=std_throughput, c=COLORS[j])
+                plt.errorbar(DENSITY, avg_throughput, yerr=std_throughput)
             else:
-                plt.plot(DENSITY, avg_throughput, c=COLORS[j])
+                plt.plot(DENSITY, avg_throughput)
         plt.ylim(0,3)
         plt.title(r)
         plt.xlabel('Density')
