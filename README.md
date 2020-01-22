@@ -48,7 +48,7 @@ Simulations can be ran using `main.py`, which allows for setting different param
 $ ./main.py -h
 
 usage: main.py [-h] [-d DENSITY] [-i ITERATIONS] [-s SIMULATIONS] [-a]
-               [-o [OUTPUT]] [-p] [-m]
+               [-o [OUTPUT]] [-p] [-m] [-A ASSHOLE_PROBABILITY]
                {regular,turbo,magic}
 
 Driver program for running roundabout simulations.
@@ -73,6 +73,8 @@ optional arguments:
   -p, --print           print the results to stdout (default: False)
   -m, --multithreading  use multithreading to speed up the simulation process
                         (default: False)
+  -A ASSHOLE_PROBABILITY, --asshole_probability ASSHOLE_PROBABILITY
+                        asshole probability for a car (default: 0)
 ```
 
 ### Examples
@@ -82,9 +84,9 @@ $ ./main.py magic -d 0.8 -i 500 -s 1 -p -a
 Runs one simulation on a magic roundabout with a car density of 0.8 and 500 time steps. Animates the simulation and prints the results to stdout.
 
 ```
-$ ./main.py turbo -d 0.2 -i 2000 -s 15 -o output -m
+$ ./main.py turbo -d 0.2 -i 2000 -s 15 -o output -A 0.05 -m
 ```
-Runs 15 simulations on a turbo roundabout, each with a car density of 0.2 and 2000 time steps. Write the results to a file in a directory called `output` (make sure this directory already exists). Use multithreading to speed up to execute multiple simulations in parallel.
+Runs 15 simulations on a turbo roundabout, each with a car density of 0.2 and 2000 time steps. Write the results to a file in a directory called `output` (make sure this directory already exists). An asshole probability of 0.05 is used, which means 5% of the cars will sometimes stand still on the road. Use multithreading to speed up to execute multiple simulations in parallel.
 
 ### Running the experiments
 
