@@ -8,6 +8,8 @@ import numpy as np
 from utils import (DEBUG, random_row, NORTH, EAST, SOUTH, WEST)
 from numpy.random import RandomState
 
+import sys
+
 def exception_handling(self, car):
     """Handles special cases for turning cars, depending on the type of roundabout.
 

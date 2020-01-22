@@ -4,6 +4,7 @@
 LC_NUMERIC=C
 STEPS=$1
 SIMULATIONS=$2
+ASSHOLE=$3
 OUTPUT="./output"
 ROUNDABOUTS=('regular' 'turbo' 'magic')
 
@@ -12,7 +13,7 @@ NC="\033[0m"
 
 run_roundabout() {
     echo -n "density = $2..."
-    $(./main.py $1 -d $2 -i $STEPS -s $SIMULATIONS -o output -m)
+    $(./main.py $1 -d $2 -i $STEPS -s $SIMULATIONS -o output -m -A $ASSHOLE)
     echo -e "\t${GREEN}DONE${NC}"
 }
 
@@ -32,8 +33,8 @@ main() {
     done
 }
 
-if [ "$#" -ne 2 ]; then
-    echo "Illegal number of parameters. Please specify the number of time steps and the number of simulations."
+if [ "$#" -ne 3 ]; then
+    echo "Illegal number of parameters. Please specify the number of time steps, the number of simulations and te asshole factor."
 else
     main
 fi
