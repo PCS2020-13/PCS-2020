@@ -9,7 +9,8 @@ import os
 ROUNDABOUTS = ['regular', 'turbo', 'magic']
 DENSITY = np.arange(0.5, 10, 0.5)/10
 STEPS = 1000
-ASSHOLE_PROB = [0, 0.1]
+ASSHOLE_PROB = [0, 0.05, 0.1]
+COLORS = ['orange', 'blue', 'green']
 
 def read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB):
     r_data = []
@@ -25,10 +26,9 @@ def read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB):
         r_data.append(a_data)
     return r_data
 
-def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB, error=False):
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-    fig.suptitle('Average traffic flow of each roundabout per density')
+def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB, error=True):
     for i,r in enumerate(ROUNDABOUTS):
+        fig = plt.figure()
         for j,a in enumerate(ASSHOLE_PROB):
             avg_throughput = []
             std_throughput = []
@@ -38,14 +38,14 @@ def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB, error=False):
                 std_throughput.append(np.std(throughput))
 
             if error:
-                axs[i].errorbar(DENSITY, avg_throughput, yerr=std_throughput)
+                plt.errorbar(DENSITY, avg_throughput, yerr=std_throughput, c=COLORS[j])
             else:
-                axs[i].plot(DENSITY, avg_throughput)
-        axs[i].set_ylim(0,3)
-        axs[i].set_title(r)
-        axs[i].set_xlabel('Density')
-        axs[i].set_ylabel('Average throughput')
-        plt.legend(ASSHOLE_PROB, title='Asshole Probability', loc=4)#, bbox_to_anchor=(1.45, 1))
+                plt.plot(DENSITY, avg_throughput, c=COLORS[j])
+        plt.ylim(0,3)
+        plt.title(r)
+        plt.xlabel('Density')
+        plt.ylabel('Average throughput')
+        plt.legend(ASSHOLE_PROB, title='Asshole Probability', loc=4)
 
 if __name__ == '__main__':
     data = read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB)
