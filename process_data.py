@@ -7,26 +7,43 @@ import fnmatch
 import os
 
 ROUNDABOUTS = ['regular', 'turbo', 'magic']
-STEPS = 250 #TEMPORARY
-ASSHOLE_PROB = 0 #TEMPORARY
+DENSITY = np.arange(0.5, 10, 0.5)/10
+STEPS = 1000
+ASSHOLE_PROB = [0.1]
+
+def read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB):
+    r_data = []
+    for r in ROUNDABOUTS:
+        a_data = []
+        for a in ASSHOLE_PROB:
+            d_data = []
+            for d in DENSITY:
+                filename = 'output/{}_{}_{}_{}.csv'.format(r, d, STEPS, a)
+                d_data.append(np.loadtxt(filename, skiprows=1, 
+                                         usecols=range(1,5), delimiter=','))
+            a_data.append(d_data)
+        r_data.append(a_data)
+    return r_data
+
+def make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB):
+    for i,r in enumerate(ROUNDABOUTS):
+        fig = plt.figure()
+        for j,a in enumerate(ASSHOLE_PROB):
+            avg_throughput = []
+            std_throughput = []
+            for d in data[i][j]:
+                throughput = d[:,1]/STEPS
+                avg_throughput.append(np.mean(throughput))
+                std_throughput.append(np.std(throughput))
+
+            plt.errorbar(DENSITY, avg_throughput, yerr=std_throughput)
+        plt.ylim(0,3)
+        plt.title(r)
+        plt.xlabel('Density')
+        plt.ylabel('Average throughput')
+        plt.legend(ASSHOLE_PROB, loc=4)
 
 if __name__ == '__main__':
-    x = np.arange(1, 10) / 10
-    print(x)
-    for r in ROUNDABOUTS:
-        avg_throughput = []
-        std_throughput = []
-        fig = plt.figure()
-
-        for d in range(1, 10):
-            filename = "output/{}_{}_{}_{}.csv".format(r, d/10, STEPS, ASSHOLE_PROB)
-            data = np.loadtxt(filename, skiprows=1, usecols=range(1,5), delimiter=',')
-            n_finished = data[:,1]
-            throughput = (n_finished) / STEPS
-            avg_throughput.append(np.mean(throughput))
-            std_throughput.append(np.std(throughput))
-
-        plt.errorbar(x, avg_throughput, yerr=std_throughput)
-        plt.ylim(0, 3)
-        plt.title(r)
+    data = read_data(ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB)
+    make_graph(data, ROUNDABOUTS, DENSITY, STEPS, ASSHOLE_PROB)
     plt.show()
