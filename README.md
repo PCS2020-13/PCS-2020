@@ -1,4 +1,4 @@
-# :police_car::blue_car::articulated_lorry: Project Computational Science 2020 :car::taxi::bus:
+# Project Computational Science 2020 :car::taxi::bus::police_car::blue_car::articulated_lorry:
 
 This repository contains all files necessary for running the simulations used by project group 13 in the Project Computational Science course at the University of Amsterdam.
 
