@@ -13,6 +13,8 @@ venv/
 *.pdf
 *.csv
 *.txt
+test.ipynb
+.ipynb_checkpoints/
 
 # Files for testing purposes
 test.py
