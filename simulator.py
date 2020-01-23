@@ -2,14 +2,6 @@
 # simulator.py
 # This file contains the RoundaboutSim class which performs the actual
 # roundabout simulations.
-#
-# TODO:
-#       - Reckless driving
-#         * asshole_factor
-#         * dick_move()
-#
-# OPTIONAL:
-#       - Different car velocities
 ###
 
 import numpy as np
