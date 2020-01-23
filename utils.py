@@ -1,6 +1,6 @@
-### utils.py
+# utils.py
 # Various utilities for running the simulations.
-###
+#
 
 from numpy.random import RandomState
 import pandas as pd
@@ -11,6 +11,7 @@ NORTH = 0
 EAST = 1
 SOUTH = 2
 WEST = 3
+
 
 def random_row(M, num_rows=1):
     """Returns one or more rows randomly from a matrix M.

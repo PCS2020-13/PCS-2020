@@ -29,7 +29,8 @@ CAR_VALUE = -1
 
 
 class RoundaboutSim():
-    def __init__(self, model, density=0.05, steps=1000, show_animation=True, asshole_probability=0):
+    def __init__(self, model, density=0.05, steps=1000, show_animation=True,
+                 asshole_probability=0):
         # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
@@ -76,7 +77,8 @@ class RoundaboutSim():
         """Helper function for determining the initial orientation of a car.
 
         Arguments:
-            start_pos {(int, int)} -- A tuple with the x and y coordinates of the starting position.
+            start_pos {(int, int)} -- A tuple with the x and y coordinates of
+                                      the starting position.
 
         Returns:
             int -- The integer corresponding to the ordinal orientation.
@@ -91,7 +93,8 @@ class RoundaboutSim():
             return WEST
 
     def get_grid(self):
-        """Creates a grid with all cars currently on the road. The cells that have a car on them will take on CAR_VALUE.
+        """Creates a grid with all cars currently on the road. The cells that
+           have a car on them will take on CAR_VALUE.
 
         Returns:
             np.array -- The model with all cars currently on the grid.
@@ -109,11 +112,16 @@ class RoundaboutSim():
         """Draws the model of the roundabout.
 
         Keyword Arguments:
-            with_cars {bool} -- If the model should be drawn with or without cars on it. (default: {True})
-            blocking {bool} -- If set to 'True', the figure is displayed immediately and the program waits
-            until the figure is closed. Otherwise it waits until a blocking show() somewhere else in the program is called.
+            with_cars {bool} -- If the model should be drawn with or without
+                                cars on it. (default: {True})
+            blocking {bool} -- If set to 'True', the figure is displayed
+                               immediately and the program waits
+                               until the figure is closed. Otherwise it waits
+                               until a blocking show() somewhere else in the
+                               program is called.
             (default: {True})
-            beautiful {bool} -- Show the roundabout with nice asphalt colors. (default: {True})
+            beautiful {bool} -- Show the roundabout with nice asphalt colors.
+                                (default: {True})
         """
         cmap = cm.get_cmap('Dark2')
 
@@ -138,7 +146,8 @@ class RoundaboutSim():
 
     def spawn_cars(self):
         """Spawns cars onto the roundabout so the aimed density is reached."""
-        while self.free_starts.size != 0 and self.true_density < self.aimed_density:
+        while self.free_starts.size != 0 and \
+                self.true_density < self.aimed_density:
             start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
@@ -165,7 +174,8 @@ class RoundaboutSim():
         """Initializes the simulation.
 
         Keyword Arguments:
-            beautiful {bool} -- Show the roundabout with nice asphalt colors. (default: {True})
+            beautiful {bool} -- Show the roundabout with nice asphalt colors.
+                                (default: {True})
         """
         self.spawn_cars()
         grid = self.get_grid()
@@ -174,7 +184,7 @@ class RoundaboutSim():
             print(self.cars)
 
         if self.show_animation:
-            fig = plt.figure(figsize=(8,8))
+            fig = plt.figure(figsize=(8, 8))
             fig.canvas.set_window_title("Roundabout simulator: {}".format(self.model.name))
             frame = plt.gca()
             frame.axes.get_xaxis().set_visible(False)
@@ -193,9 +203,10 @@ class RoundaboutSim():
 
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             sim_title = plt.title("")
-            # Interval defines the time between different frames in ms. The lower the number, the faster the animation.
+            # Interval defines the time between different frames in ms.
+            # The lower the number, the faster the animation.
             anim = animation.FuncAnimation(fig, self.step,
-                                           fargs=(sim_grid,sim_title),
+                                           fargs=(sim_grid, sim_title),
                                            interval=10,
                                            frames=self.steps,
                                            repeat=False
@@ -222,7 +233,8 @@ class RoundaboutSim():
 
         Arguments:
             i {int} -- The frame number
-            grid {plt.figure} -- A matplotlib figure containing the current state of the roundabout.
+            grid {plt.figure} -- A matplotlib figure containing the current
+                                 state of the roundabout.
 
         Returns:
             plt.figure -- The new state of the roundabout.
@@ -240,8 +252,8 @@ class RoundaboutSim():
         return grid,
 
     def process_cars(self):
-        """Process the cars. The next step of a car depends on the state of the current cell it is on.
-        This can be one of the following states:
+        """Process the cars. The next step of a car depends on the state of the
+           current cell it is on. This can be one of the following states:
         0 = Grass (non-road)
         1 = Start
         2 = Stop

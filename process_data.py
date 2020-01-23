@@ -11,9 +11,8 @@ import os
 ROUNDABOUTS = ['regular', 'turbo', 'magic']
 DENSITY = np.arange(0.5, 10, 0.5)/10
 STEPS = 1000
-ASSHOLE_PROB = [0, 0.05, 0.1]
+ASSHOLE_PROB = [0, 0.05, 0.1, 0.15, 0.2, 0.25]
 
-plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 plt.style.use('seaborn-poster')
 

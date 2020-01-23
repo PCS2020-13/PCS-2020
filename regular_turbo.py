@@ -10,6 +10,7 @@ from numpy.random import RandomState
 
 import sys
 
+
 def exception_handling(self, car):
     """Handles special cases for turning cars, depending on the type of roundabout.
 
@@ -101,6 +102,7 @@ def process_cars_reg(self):
 
     for car in self.cars_not_round:
         drive_outside(self, car)
+
 
 def drive_roundabout(self, car, wait_ctr=2):
     """Let a car drive on the roundabout.
@@ -197,6 +199,7 @@ def drive_roundabout(self, car, wait_ctr=2):
             car.prev_pos[1] += 1
 
         car.prev_pos[0] = car.cur_pos
+
 
 def drive_outside(self, car):
     """Let a car drive outside of the roundabout.

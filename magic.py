@@ -9,6 +9,7 @@ from utils import (DEBUG, random_row, NORTH, EAST, SOUTH, WEST)
 from numpy.random import RandomState
 import sys
 
+
 def exceptions_magic(self, car):
     """Handles special cases for turning cars.
 
@@ -102,6 +103,7 @@ def exceptions_magic(self, car):
             else:
                 return 3
 
+
 def process_cars_magic(self):
     """Special function for processing cars on the magic roundabout."""
     self.cars_on_round = []
@@ -162,7 +164,7 @@ def drive_magic(self, car, wait_ctr=3):
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            
+
             # Checks if car stands still for more than 3 turns
             if car.prev_pos[1] >= wait_ctr:
                 prob = 1-prob
@@ -186,7 +188,7 @@ def drive_magic(self, car, wait_ctr=3):
             prob = car.turn_ctr * (1/4)
             if prob > 1:
                 prob = 1
-            
+
             # Checks if car stands still for more than 3 turns
             if car.prev_pos[1] == wait_ctr:
                 prob = 1-prob
@@ -260,7 +262,7 @@ def drive_magic(self, car, wait_ctr=3):
                     car.drive()
             elif self.priority(car, car.orientation):
                 car.drive()
-        
+
         if np.array_equal(car.cur_pos, car.prev_pos[0]):
             car.prev_pos[1] += 1
 

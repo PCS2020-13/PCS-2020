@@ -8,8 +8,10 @@
 from utils import (NORTH, EAST, SOUTH, WEST)
 from numpy.random import RandomState
 
+
 class Car:
-    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5, turn_ctr=0, switch_ctr=0, asshole_factor=0, asshole_ctr=0):
+    def __init__(self, orientation, start_pos, end_pos, active=True, p_turn=0.5,
+                 turn_ctr=0, switch_ctr=0, asshole_factor=0, asshole_ctr=0):
         self.orientation = orientation
         self.cur_pos = start_pos
         self.prev_pos = [start_pos, 0]
@@ -22,20 +24,24 @@ class Car:
         self.asshole_ctr = asshole_ctr
 
     def __repr__(self):
-        return '(cur_pos: {}, orientation: {})'.format(self.cur_pos, self.orientation)
+        return '(cur_pos: {}, orientation: {})'.format(self.cur_pos,
+                                                       self.orientation)
 
     def toggle_active(self):
-        """Toggle whether a car is active or not (e.g. still participating in the traffic of the roundabout)."""
+        """Toggle whether a car is active or not (e.g. still participating in
+           the traffic of the roundabout)."""
         self.active = not self.active
 
     def drive(self):
         """Move the car to a new position.
 
         Arguments:
-            new_pos {[int, int]} -- A numpy-array containing the x and y coordinates of the new position.
+            new_pos {[int, int]} -- A numpy-array containing the x and y
+                                    coordinates of the new position.
 
         Returns:
-            {[int, int]} -- A numpy-array containing the x and y coordinates of the updated current position.
+            {[int, int]} -- A numpy-array containing the x and y coordinates
+                            of the updated current position.
         """
         if self.orientation == NORTH:
             self.cur_pos[0] -= 1

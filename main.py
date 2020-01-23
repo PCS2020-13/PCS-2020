@@ -57,14 +57,18 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--simulations', default=10,
                         type=int, help='number of simulations')
     parser.add_argument('-a', '--animate', action='store_true',
-                        help='show the animations (automatically disabled in combination with --multithreading)')
+                        help='show the animations (automatically disabled in \
+                              combination with --multithreading)')
     parser.add_argument('-o', '--output', nargs='?', default=False,
-                        help='store the results in an output file specified by the given directory')
+                        help='store the results in an output file specified by \
+                              the given directory')
     parser.add_argument('-p', '--print', action='store_true',
                         help='print the results to stdout')
     parser.add_argument('-m', '--multithreading', action='store_true',
-                        help='use multithreading to speed up the simulation process')
-    parser.add_argument('-A', '--asshole_probability', default=0, type=float, help='asshole probability for a car')
+                        help='use multithreading to speed up the simulation \
+                              process')
+    parser.add_argument('-A', '--asshole_probability', default=0, type=float,
+                        help='asshole probability for a car')
 
     args = parser.parse_args()
 
@@ -90,7 +94,8 @@ if __name__ == '__main__':
             for future in futures.as_completed(future_to_roundabout):
                 data = future.result()
                 df = df.append(pd.DataFrame(
-                    dict(zip(columns, data)), index=[0]), ignore_index=True, sort=False)
+                    dict(zip(columns, data)), index=[0]), ignore_index=True,
+                         sort=False)
     else:
         r = RoundaboutSim(roundabout, density=args.density,
                           steps=args.iterations, show_animation=args.animate)
@@ -102,7 +107,8 @@ if __name__ == '__main__':
             turns_avg = np.mean(r.turns_per_car)
             turns_std = np.std(r.turns_per_car)
             n_waiting = r.waiting_cars
-            data = [float(n_total), float(n_finished), turns_avg, turns_std, n_waiting]
+            data = [float(n_total), float(n_finished), turns_avg, turns_std,
+                    n_waiting]
             df_temp = pd.DataFrame(dict(zip(columns, data)), index=[0])
             df = df.append(df_temp, ignore_index=True, sort=False)
 
