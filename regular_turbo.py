@@ -210,7 +210,7 @@ def drive_outside(self, car):
     row, col = car.cur_pos
     state = self.model.grid[row][col]
 
-    # Check if nothing is in front of the car
+    # Check if nothing is in front of the car.
     if self.priority(car, car.orientation):
         if state == 1:
             self.free_starts = np.append(

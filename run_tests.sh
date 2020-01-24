@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
+#########################################################
+# Bash script to run a series of roundabout simulations #
+#########################################################
+
 # Makes sure decimal numbers have a dot instead of a comma
 LC_NUMERIC=C
+
 STEPS=$1
 SIMULATIONS=$2
 ASSHOLE=$3
@@ -34,7 +39,7 @@ main() {
 }
 
 if [ "$#" -ne 3 ]; then
-    echo "Illegal number of parameters. Please specify the number of time steps, the number of simulations and te asshole factor."
+    echo "Illegal number of parameters. Please specify the number of time steps, the number of simulations and the asshole factor."
 else
     main
 fi

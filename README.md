@@ -2,6 +2,8 @@
 
 This repository contains all files necessary for running the simulations used by project group 13 in the Project Computational Science course at the University of Amsterdam.
 
+Please see [Reproducability](#reproducability) on how to reproduce a givnen figure.
+
 ## Group members
 Dorian Bekaert, Florine de Geus, Elisha Nieuwburg
 
@@ -92,6 +94,28 @@ Runs 15 simulations on a turbo roundabout, each with a car density of 0.2 and 20
 
 To run a series of experiments, run
 ```
-$ ./run_tests.sh STEPS SIMULATIONS
+$ ./run_tests.sh STEPS SIMULATIONS P_ASSHOLE
 ```
-Here, `STEPS` is the number of time steps per simulation and `SIMULATIONS` is the number of simulations per density.
+Here, `STEPS` is the number of time steps per simulation, `SIMULATIONS` is the number of simulations per density and `P_ASSHOLE` the asshole probability.
+
+## Reproducability
+
+![](figures/magic_100.png)
+
+To reproduce the figure above, please follow these steps:
+
+1. Make sure all dependencies in `requirements.txt` are installed. Optionally, follow [these steps](#environment-setup).
+
+2. Run the following command. This will start the simulations. It can take a while before it is finished.
+ ```
+$ ./run_tests.sh 150 5 0
+```
+3. In the `output` directory there are `.csv` files containing the simulation data for each density for each roundabout.
+
+4. Run the command below. Add `-s` if you also want to save the generated figures. The figures will be stored in the `figures` directory.
+
+```
+$ ./process_data.py 100 0.0
+```
+
+The figure should look relatively similar to the one shown above.

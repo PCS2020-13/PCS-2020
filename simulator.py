@@ -23,7 +23,6 @@ CAR_VALUE = -1
 class RoundaboutSim():
     def __init__(self, model, density=0.05, steps=1000, show_animation=True,
                  asshole_probability=0):
-        # self.model = np.loadtxt(model_path, delimiter = ' ', dtype=int)
         self.model = model
         self.aimed_density = density
         self.true_density = 0
@@ -83,6 +82,8 @@ class RoundaboutSim():
             return NORTH
         elif start_pos[1] == self.model.grid.shape[1] - 1:
             return WEST
+        else:
+            raise ValueError('No valid start position')
 
     def get_grid(self):
         """Creates a grid with all cars currently on the road. The cells that
@@ -143,6 +144,7 @@ class RoundaboutSim():
             start_pos = random_row(self.free_starts)[0]
             end_pos = random_row(self.end_states)[0]
             orientation = self.get_start_orientation(start_pos)
+
             # Define 'assholes' with a certain asshole factor that stop randomly in traffic.
             if RandomState().binomial(1, p=self.asshole_probability):
                 car = Car(orientation, start_pos, end_pos, asshole_factor=0.05)
@@ -195,14 +197,16 @@ class RoundaboutSim():
 
             sim_grid = plt.imshow(grid, cmap=cmap, norm=norm)
             sim_title = plt.title("")
+
             # Interval defines the time between different frames in ms.
             # The lower the number, the faster the animation.
-            anim = animation.FuncAnimation(fig, self.step,
-                                           fargs=(sim_grid, sim_title),
-                                           interval=10,
-                                           frames=self.steps,
-                                           repeat=False
-                                           )
+            animation.FuncAnimation(fig,
+                                    self.step,
+                                    fargs=(sim_grid, sim_title),
+                                    interval=10,
+                                    frames=self.steps,
+                                    repeat=False
+                                   )
 
             plt.show()
 
