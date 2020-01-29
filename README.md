@@ -2,7 +2,7 @@
 
 This repository contains all files necessary for running the simulations used by project group 13 in the Project Computational Science course at the University of Amsterdam.
 
-Please see [Reproducability](#reproducability) on how to reproduce a givnen figure.
+Please see [Reproducability](#reproducability) on how to reproduce a given figure.
 
 ## Group members
 Dorian Bekaert, Florine de Geus, Elisha Nieuwburg
@@ -104,7 +104,7 @@ Here, `STEPS` is the number of time steps per simulation, `SIMULATIONS` is the n
 
 To reproduce the figure above, please follow these steps:
 
-1. Make sure all dependencies in `requirements.txt` are installed. Optionally, follow [these steps](#environment-setup).
+1. Make sure all dependencies in `requirements.txt` are installed. Optionally (but recommended), follow [these steps](#environment-setup).
 
 2. Run the following command. This will start the simulations. It can take a while before it is finished.
  ```
