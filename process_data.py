@@ -128,7 +128,6 @@ if __name__ == '__main__':
     parser.add_argument('asshole_probs', nargs='*', default=ASSHOLE_PROB, help='The asshole probabilities to use')
     parser.add_argument('-s', '--save', action='store_true', help='Save the figures')
     args = parser.parse_args()
-    print(args)
 
     data = read_data(args.steps, args.asshole_probs)
     make_graph(data, args.steps, args.asshole_probs, save=args.save)
