@@ -18,7 +18,7 @@ DENSITY = np.arange(0.5, 10, 0.5)/10
 ASSHOLE_PROB = [0, 0.05, 0.1, 0.15, 0.2, 0.25]
 
 
-def read_data(steps, asshole_probs):
+def read_data(steps, asshole_probs, test=False):
     r_data = []
     for r in ROUNDABOUTS:
         a_data = []
