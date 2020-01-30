@@ -115,7 +115,7 @@ $ ./run_tests.sh 150 5 0
 4. Run the command below. Add `-s` if you also want to save the generated figures. The figures will be stored in the `figures` directory.
 
 ```
-$ ./process_data.py 100 0.0
+$ ./process_data.py 150 0.0
 ```
 
 The figure should look relatively similar to the one shown above.
