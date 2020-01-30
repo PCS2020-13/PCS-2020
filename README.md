@@ -108,14 +108,14 @@ To reproduce the figure above, please follow these steps:
 
 2. Run the following command. This will start the simulations. It can take a while before it is finished.
  ```
-$ ./run_tests.sh 150 5 0
+$ ./run_tests.sh 100 5 0
 ```
 3. In the `output` directory there are `.csv` files containing the simulation data for each density for each roundabout.
 
 4. Run the command below. Add `-s` if you also want to save the generated figures. The figures will be stored in the `figures` directory.
 
 ```
-$ ./process_data.py 150 0.0
+$ ./process_data.py 100 0.0
 ```
 
 The figure should look relatively similar to the one shown above.
