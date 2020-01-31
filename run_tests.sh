@@ -6,6 +6,7 @@
 
 # Makes sure decimal numbers have a dot instead of a comma
 LC_NUMERIC=C
+LANG=en_US
 
 STEPS=$1
 SIMULATIONS=$2
